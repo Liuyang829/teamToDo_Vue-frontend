@@ -1,0 +1,53 @@
+* {
+  box-sizing: border-box;
+}
+
+ul {
+  list-style: none;
+}
+
+.login {
+  .ivu-input,
+  .ivu-btn-primary {
+    height: 46px;
+  }
+  .ivu-btn-primary {
+    padding: 0;
+  }
+}
+
+.header {
+  .ivu-poptip-body {
+    padding: 0;
+  }
+  .ivu-divider {
+    margin: 0;
+    margin-top: 5px;
+  }
+  z-index: 100;
+}
+
+.content {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 50px;
+  bottom: 0;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+  &>div {
+    width: 1200px;
+    height: calc(100vh - 150px );
+    margin: 48px auto;
+  }
+}
+
+.ivu-tree-title-selected {
+  background: transparent;
+  color: #2d8cf0;
+}
+
+.ivu-input,.ivu-select-single .ivu-select-selection,.ivu-select-placeholder,.ivu-select-selected-value {
+  height: 40px !important;
+  line-height: 40px !important;
+}

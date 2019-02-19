@@ -8,14 +8,14 @@ export default new Router({
 
     {
       path: '/',
-      name: 'register',
-      component: () => import('@/view/register')
+      name: 'login',
+      component: () => import('@/view/login')
     },
 
     {
-      path: '/login',
-      name: 'login',
-      component:() => import('@/view/login')
+      path: '/register',
+      name: 'register',
+      component:() => import('@/view/register')
     },
 
     {

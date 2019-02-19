@@ -7,13 +7,14 @@
         <Icon class="icon top-icon" @click="show = true" type="ios-add"/>
       </div>
     </div>
+
     <p class="project-title">我负责的项目</p>
     <ul class="project-list">
-      <li class="project-item">
+      <li class="project-item" v-for="item in projects" :key="item.name">
         <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
         <div class="project-mask">
           <div class="project-mask-header">
-            <p class="project-mask-title">产品进展</p>
+            <p class="project-mask-title">{{item.name}}</p>
             <div>
               <Tooltip content="打开设置设置" placement="top">
                 <Icon class="icon" type="md-create"/>
@@ -27,6 +28,7 @@
         <p>创建新项目</p>
       </li>
     </ul>
+
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
       <li class="project-item">
@@ -103,6 +105,7 @@
 <script>
 import qs from "qs";
 export default {
+  inject:['reload'],
   data() {
     return {
       show: false,
@@ -129,10 +132,25 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      projects: "",
     };
   },
+
+  created: function() {
+    this.axios
+      .get("http://localhost:8090/projects/")
+      .then((response) => {
+        this.projects=response.data.data;
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  },
+
   methods: {
+
+
     changeLevel(level) {
       this.formInline.level = level;
       this.poptipShow = false;
@@ -145,7 +163,7 @@ export default {
             description: this.formInline.discription,
             level: this.formInline.level,
             state: "未完成",
-            start_time:  getFormatDate(new Date(this.formInline.start_time)),
+            start_time: getFormatDate(new Date(this.formInline.start_time)),
             end_time: getFormatDate(new Date(this.formInline.end_time))
           };
 
@@ -153,7 +171,10 @@ export default {
             .post("http://localhost:8090/projects/", qs.stringify(data))
             .then(res => {
               if (res.data.code == 200) {
+                console.log(res);
                 this.$Message.success("创建成功");
+                this.show = false;
+                this.reload();
               } else {
                 this.$Message.error("创建失败");
               }
@@ -172,7 +193,7 @@ function getFormatDate(date) {
   var seperator1 = "-";
   var year = date.getFullYear();
   var month = date.getMonth() + 1;
-  var strDate = date.getDate()+1;
+  var strDate = date.getDate() + 1;
   if (month >= 1 && month <= 9) {
     month = "0" + month;
   }

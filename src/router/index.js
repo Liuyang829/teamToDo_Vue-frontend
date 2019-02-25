@@ -5,11 +5,19 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+
     {
       path: '/',
-      name: 'register',
-      component: () => import('@/view/register')
+      name: 'login',
+      component: () => import('@/view/login')
     },
+
+    {
+      path: '/register',
+      name: 'register',
+      component:() => import('@/view/register')
+    },
+
     {
       path: '/home',
       name: 'home',
@@ -19,6 +27,11 @@ export default new Router({
           name: '',
           path: '',
           component: () => import('@/view/project')
+        },
+        {
+          name: 'projectdetail',
+          path: '/projectdetail',
+          component: () => import('@/view/projectdetail')
         },
         {
           name: 'personnel',

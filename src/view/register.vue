@@ -61,7 +61,7 @@ export default {
 
           let config = {
             headers: {
-              "Content-Type": "multipart/form-data"
+              "Content-Type": "multipart/form-data",
             }
           };
 

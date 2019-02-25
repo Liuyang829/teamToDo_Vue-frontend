@@ -9,10 +9,12 @@
     </div>
 
     <p class="project-title">我负责的项目</p>
+
     <ul class="project-list">
+
       <li class="project-item" v-for="item in projects" :key="item.name">
         <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
-        <div class="project-mask">
+        <div class="project-mask" @click="toDetail(item)">
           <div class="project-mask-header">
             <p class="project-mask-title">{{item.name}}</p>
             <div>
@@ -23,10 +25,12 @@
           </div>
         </div>
       </li>
+
       <li class="project-item add-project">
         <Icon class="add-icon" @click="show = true" type="ios-add-circle"/>
         <p>创建新项目</p>
       </li>
+
     </ul>
 
     <p class="project-title">我参与的项目</p>
@@ -97,6 +101,7 @@
         <FormItem>
           <Button long type="primary" @click="handleSubmit('formInline')">完成并创建</Button>
         </FormItem>
+        
       </Form>
     </Modal>
   </div>
@@ -150,6 +155,10 @@ export default {
 
   methods: {
 
+    toDetail(item){
+      console.log(item);
+      this.$router.push("projectdetail");
+    },
 
     changeLevel(level) {
       this.formInline.level = level;

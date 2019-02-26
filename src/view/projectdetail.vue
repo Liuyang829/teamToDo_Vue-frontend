@@ -460,8 +460,8 @@ export default {
           // POST
           this.axios
             .post("http://localhost:8090/projects/", qs.stringify(data))
-            .then(res => {
-              if (res.data.code == 200) {
+            .then((response) => {
+              if ((response).data.code == 200) {
                 console.log(res);
                 this.$Message.success("任务创建成功");
                 this.createtask = false;

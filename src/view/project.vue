@@ -167,8 +167,7 @@ export default {
   methods: {
 
     toDetail(item){
-      console.log(item);
-      this.$router.push("projectdetail");
+      this.$router.push({name:"projectdetail",params:{item:item}});
     },
 
     changeLevel(level) {

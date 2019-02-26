@@ -14,7 +14,7 @@
 
       <li class="project-item" v-for="item in projects" :key="item.name">
         <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
-        <div class="project-mask" @click="toDetail(item)">
+        <div class="project-mask" @click="toDetail(item.name)">
           <div class="project-mask-header">
             <p class="project-mask-title">{{item.name}}</p>
             <div>
@@ -155,9 +155,9 @@ export default {
 
   methods: {
 
-    toDetail(item){
-      console.log(item);
-      this.$router.push("projectdetail");
+    toDetail(title){
+      console.log(title);
+      this.$router.push({name:"projectdetail",params:{title:title}});
     },
 
     changeLevel(level) {

@@ -3,7 +3,7 @@
     <Row>
       <Col span="6" offset="8">
         <div class="projecttitle">
-          <p align="center">xiangmu</p>
+          <p align="center">{{this.$route.params.title}}</p>
         </div>
       </Col>
       <Col span="6" offset="4">
@@ -96,9 +96,10 @@
 <script>
 export default {
   data() {
+    // console.log(this.$route.params.title);
     return {
       show: true,
-      value1: false
+      value1: false,
     };
   },
   methods: {}

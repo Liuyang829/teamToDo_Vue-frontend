@@ -1,14 +1,30 @@
 <template>
   <div>
-    <div align="right">
-      <Button @click="value1 = true" type="primary">Open</Button>
-      <Drawer title="Basic Drawer" :closable="false" v-model="value1" transfer="false" inner="true">
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Drawer>
-    </div>
+    <Row>
+      <Col span="6" offset="8">
+        <div class="projecttitle">
+          <p align="center">xiangmu</p>
+        </div>
+      </Col>
+      <Col span="6" offset="4">
+        <div align="right">
+          <Button @click="value1 = true" type="primary">Open</Button>
+          <Drawer
+            title="Basic Drawer"
+            :closable="false"
+            v-model="value1"
+            transfer="false"
+            inner="true"
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Drawer>
+        </div>
+      </Col>
+    </Row>
 
+    <br>
     <Row type="flex" justify="center" :gutter="40">
       <Col span="8">
         <p>待分配</p>
@@ -90,4 +106,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.projecttitle {
+  font-style: "Hiragino Sans GB";
+  color: #464c5b;
+  font-size: 20px;
+}
 </style>

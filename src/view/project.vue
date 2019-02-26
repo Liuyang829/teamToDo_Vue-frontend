@@ -113,6 +113,7 @@ export default {
   inject:['reload'],
   data() {
     return {
+      userInfo: JSON.parse(localStorage.getItem('userInfo')),
       show: false,
       poptipShow: false,
       formInline: {
@@ -154,6 +155,9 @@ export default {
   },
 
   created: function() {
+
+    console.log(this.userInfo);
+
     this.axios
       .get("http://localhost:8090/projects/")
       .then((response) => {

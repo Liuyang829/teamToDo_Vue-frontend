@@ -6,10 +6,11 @@
           <p align="center">{{projectInfo.name}}</p>
         </div>
       </Col>
+
       <Col span="6" offset="4">
         <div align="right">
-          <Button @click="DrawerValue1 = true" type="text" ghost>
-            <Icon type="md-person-add" size="30" color="black"/>
+          <Button @click="showDrawer()" type="text" ghost>
+            <Icon type="md-options" size="30" color="black"/>
           </Button>
         </div>
       </Col>
@@ -276,64 +277,60 @@
     </Modal>
 
     <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
-      <Form :model="formItem">
-        <FormItem label="Input">
-          <Input v-model="formItem.input" placeholder="Enter something..."></Input>
+      <Form :model="formItem" label-position="top">
+        <FormItem label="项目名称">
+          <Input v-model="formItem.projectName" placeholder="输入项目名称"></Input>
         </FormItem>
-        <FormItem label="Select">
-          <Select v-model="formItem.select">
-            <Option value="beijing">New York</Option>
-            <Option value="shanghai">London</Option>
-            <Option value="shenzhen">Sydney</Option>
+
+        <FormItem label="项目简介">
+          <Input
+            v-model="formItem.projectDesc"
+            type="textarea"
+            :autosize="{minRows: 2,maxRows: 5}"
+            placeholder="输入项目简介"
+          ></Input>
+        </FormItem>
+
+        <FormItem label="项目级别">
+          <Select v-model="formItem.level">
+            <Option value="普通">普通</Option>
+            <Option value="紧急">紧急</Option>
+            <Option value="非常紧急">非常紧急</Option>
           </Select>
         </FormItem>
-        <FormItem label="DatePicker">
+
+        <FormItem label="时间" >
           <Row>
-            <Col span="11">
-              <DatePicker type="date" pl务简介aceholder="Select date" v-model="formItem.date"></DatePicker>
+            <Col span="11" align="center">
+              <DatePicker size="large" type="date" placeholder="开始日期" v-model="formItem.start_time"></DatePicker>
             </Col>
             <Col span="2" style="text-align: center">-</Col>
-            <Col span="11">
-              <TimePicker type="time" placeholder="Select time" v-model="formItem.time"></TimePicker>
+            <Col span="11" align="center">
+              <DatePicker size="large" type="date" placeholder="结束日期" v-model="formItem.end_time"></DatePicker>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="Radio">
-          <RadioGroup v-model="formItem.radio">
-            <Radio label="male">Male</Radio>
-            <Radio label="female">Female</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="Checkbox">
-          <CheckboxGroup v-model="formItem.checkbox">
-            <Checkbox label="Eat"></Checkbox>
-            <Checkbox label="Sleep"></Checkbox>
-            <Checkbox label="Run"></Checkbox>
-            <Checkbox label="Movie"></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="Switch">
-          <i-switch v-model="formItem.switch" size="large">
-            <span slot="open">On</span>
-            <span slot="close">Off</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="Slider">
-          <Slider v-model="formItem.slider" range></Slider>
-        </FormItem>
-        <FormItem label="Text">
-          <Input
-            v-model="formItem.textarea"
-            type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
-            placeholder="Enter something..."
-          ></Input>
-        </FormItem>
+
         <FormItem>
-          <Button type="primary">Submit</Button>
-          <Button style="margin-left: 8px">Cancel</Button>
+          <div align="center">
+            <Button type="primary">Submit</Button>
+            <Button style="margin-left: 8px">Cancel</Button>
+          </div>
         </FormItem>
       </Form>
+
+      <Divider orientation="left">项目成员</Divider>
+      <ul>
+        <li v-for="n in [1,2,3]" :key="n">
+          <Card long>
+            <div style="text-align:center">
+              <h3>A high quality UI Toolkit based on Vue.js</h3>
+            </div>
+          </Card>
+        </li>
+      </ul>
+      <br>
+      <Input v-model="showDrawer" size="large" placeholder="large size" />
     </Drawer>
   </div>
 </template>
@@ -345,6 +342,7 @@ export default {
       //projectid:
 
       //wsg
+      userInfo: JSON.parse(localStorage.getItem("userInfo")),
       projectInfo: "",
       projectId: "",
       DrawerValue1: false,
@@ -355,15 +353,11 @@ export default {
         position: "static"
       },
       formItem: {
-        input: "",
-        select: "",
-        radio: "male",
-        checkbox: [],
-        switch: true,
-        date: "",
-        time: "",
-        slider: [20, 50],
-        textarea: ""
+        projectName: "",
+        projectDesc: "",
+        level: "",
+        start_time: "",
+        end_time: ""
       },
 
       //shz
@@ -403,9 +397,10 @@ export default {
   },
   //渲染task
   created: function() {
+    console.log(this.userInfo);
+
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
-    console.log(this.projectId);
 
     this.axios
       .get("http://localhost:8090/projects/tasks", {
@@ -414,10 +409,9 @@ export default {
       .then(response => {
         if (response.data.code == 200) {
           this.projectInfo = response.data.data.project;
+          console.log(this.projectInfo);
           this.tasklist = response.data.data.tasks;
-          console.log("aaa", this.projectInfo);
-        }
-        else{
+        } else {
           this.$Message.error("请求失败");
         }
       })
@@ -439,6 +433,14 @@ export default {
   },
 
   methods: {
+    showDrawer() {
+      this.DrawerValue1 = true;
+      this.formItem.projectName = this.projectInfo.name;
+      this.formItem.projectDesc = this.projectInfo.description;
+      this.formItem.level = this.projectInfo.level;
+      this.formItem.start_time = this.projectInfo.start_time;
+      this.formItem.end_time = this.projectInfo.end_time;
+    },
     changeLevel(level) {
       this.taskinfo.level = level;
       this.poptipShow = false;
@@ -460,8 +462,8 @@ export default {
           // POST
           this.axios
             .post("http://localhost:8090/projects/", qs.stringify(data))
-            .then((response) => {
-              if ((response).data.code == 200) {
+            .then(response => {
+              if (response.data.code == 200) {
                 console.log(res);
                 this.$Message.success("任务创建成功");
                 this.createtask = false;

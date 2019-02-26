@@ -47,6 +47,10 @@ export default {
             .post("http://localhost:8090/login/", formData)
             .then(res => {
               if (res.data.code == 200) {
+
+                console.log(res.data.data);
+                localStorage.setItem('userInfo',JSON.stringify(res.data.data));
+
                 this.$Message.success("Success!");
                 this.$router.push("home");
               } else {

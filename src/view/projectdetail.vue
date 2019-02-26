@@ -3,12 +3,12 @@
     <Row>
       <Col span="6" offset="8">
         <div class="projecttitle">
-          <p align="center">{{projectId}}</p>
+          <p align="center">{{projectInfo.name}}</p>
         </div>
       </Col>
       <Col span="6" offset="4">
         <div align="right">
-          <Button @click="DrawerValue1 = true" type="text"  ghost>
+          <Button @click="DrawerValue1 = true" type="text" ghost>
             <Icon type="md-person-add" size="30" color="black"/>
           </Button>
         </div>
@@ -17,61 +17,41 @@
 
     <br>
     <Row type="flex" justify="center" :gutter="40">
-
       <Col span="8" id="waiting">
         <ul>
           <li class="task-classify-title">
             <p justify="center">待分配</p>
           </li>
-          <br/>
+          <br>
 
-          <li class="task-item">
+          <li
+            class="task-item"
+            v-for="taskitem in tasklist"
+            v-if="taskitem.state==待分配"
+            :key="taskitem.name"
+          >
             <Card long>
               <p slot="title">
                 <Dropdown>
                   <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon> 任务名称
+                    <Icon type="ios-arrow-down"></Icon>
+                    {{taskitem.name}}
                   </a>
                   <DropdownMenu slot="list">
                     <DropdownItem disabled>待分配</DropdownItem>
                     <DropdownItem>进行中</DropdownItem>
                     <DropdownItem>已完成</DropdownItem>
                   </DropdownMenu>
-                </Dropdown> 
-              </p>
-              <a @click="createtask = true" slot="extra" @click.prevent="changeLimit">
-                <Icon type="ios-loop-strong"></Icon>+ 详细
-              </a>
-              <ul>
-                <li> 任务简介 </li>
-              </ul>
-            </Card>
-
-            <br/>
-          </li>
-
-          <li class="task-item" v-for="taskitem in tasklist" v-if="taskitem.state = 待分配" :key="taskitem.name">
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon> {{taskitem.name}}
-                  </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem disabled>待分配</DropdownItem>
-                    <DropdownItem>进行中</DropdownItem>
-                    <DropdownItem>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown> 
+                </Dropdown>
               </p>
               <a @click="changetask = true" slot="extra" @click.prevent="changeLimit">
                 <Icon type="ios-loop-strong"></Icon>+ 详细
               </a>
               <ul>
-                <li> {{taskitem.description}} </li>
+                <li>{{taskitem.description}}</li>
               </ul>
             </Card>
-            <br/>
+            <br>
           </li>
 
           <li>
@@ -85,32 +65,37 @@
           <li class="task-classify-title">
             <p justify="center">进行中</p>
           </li>
-          <br/>
+          <br>
 
-          <li class="task-item" v-for="taskitem in tasklist" v-if="taskitem.state = 进行中" :key="taskitem.name">
+          <li
+            class="task-item"
+            v-for="taskitem in tasklist"
+            v-if="taskitem.state = 进行中"
+            :key="taskitem.name"
+          >
             <Card long>
               <p slot="title">
                 <Dropdown>
                   <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon> {{taskitem.name}}
+                    <Icon type="ios-arrow-down"></Icon>
+                    {{taskitem.name}}
                   </a>
                   <DropdownMenu slot="list">
                     <DropdownItem>待分配</DropdownItem>
                     <DropdownItem disabled>进行中</DropdownItem>
                     <DropdownItem>已完成</DropdownItem>
                   </DropdownMenu>
-                </Dropdown> 
+                </Dropdown>
               </p>
               <a @click="changetask = true" slot="extra" @click.prevent="changeLimit">
                 <Icon type="ios-loop-strong"></Icon>+ 详细
               </a>
               <ul>
-                <li> {{taskitem.description}} </li>
+                <li>{{taskitem.description}}</li>
               </ul>
             </Card>
-            <br/>
+            <br>
           </li>
-
         </ul>
       </Col>
 
@@ -119,35 +104,39 @@
           <li class="task-classify-title">
             <p justify="center">已完成</p>
           </li>
-          <br/>
+          <br>
 
-          <li class="task-item" v-for="taskitem in tasklist" v-if="taskitem.state = 已完成" :key="taskitem.name">
+          <li
+            class="task-item"
+            v-for="taskitem in tasklist"
+            v-if="taskitem.state = 已完成"
+            :key="taskitem.name"
+          >
             <Card long>
               <p slot="title">
                 <Dropdown>
                   <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon> {{taskitem.name}}
+                    <Icon type="ios-arrow-down"></Icon>
+                    {{taskitem.name}}
                   </a>
                   <DropdownMenu slot="list">
                     <DropdownItem>待分配</DropdownItem>
                     <DropdownItem>进行中</DropdownItem>
                     <DropdownItem disabled>已完成</DropdownItem>
                   </DropdownMenu>
-                </Dropdown> 
+                </Dropdown>
               </p>
-              <a @click="changetask = true" slot="extra" >
+              <a @click="changetask = true" slot="extra">
                 <Icon type="ios-loop-strong"></Icon>+ 详细
               </a>
               <ul>
-                <li> {{taskitem.description}} </li>
+                <li>{{taskitem.description}}</li>
               </ul>
             </Card>
-            <br/>
+            <br>
           </li>
-
         </ul>
       </Col>
-
     </Row>
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
@@ -160,7 +149,13 @@
         </FormItem>
 
         <FormItem prop="discription">
-          <Input type="textarea" :rows="4" v-model="taskinfo.discription" placeholder="任务简介" clearable/>
+          <Input
+            type="textarea"
+            :rows="4"
+            v-model="taskinfo.discription"
+            placeholder="任务简介"
+            clearable
+          />
         </FormItem>
 
         <FormItem prop="level">
@@ -202,14 +197,13 @@
 
         <FormItem label="Select">
           <Select v-model="taskinfo.member" placeholder="负责人(必选)">
-              <!--Option vue-for="member in projectInfo.member." >{{member.name}}</Option-->
+            <!--Option vue-for="member in projectInfo.member." >{{member.name}}</Option-->
           </Select>
         </FormItem>
 
         <FormItem>
           <Button long type="success" @click="handleSubmit('taskinfo')">完成并创建</Button>
         </FormItem>
-        
       </Form>
     </Modal>
 
@@ -223,7 +217,13 @@
         </FormItem>
 
         <FormItem prop="discription">
-          <Input type="textarea" :rows="4" v-model="taskinfo.discription" placeholder="任务简介" clearable/>
+          <Input
+            type="textarea"
+            :rows="4"
+            v-model="taskinfo.discription"
+            placeholder="任务简介"
+            clearable
+          />
         </FormItem>
 
         <FormItem prop="level">
@@ -265,18 +265,17 @@
 
         <FormItem label="Select">
           <Select v-model="taskinfo.member" placeholder="负责人(必选)">
-              <!--Option vue-for="member in projectInfo.member." >{{member.name}}</Option-->
+            <!--Option vue-for="member in projectInfo.member." >{{member.name}}</Option-->
           </Select>
         </FormItem>
 
         <FormItem>
-          <Button long type="success" @click="handleSubmit('taskinfo')"保存</Button>
+          <Button long type="success" @click="handleSubmit('taskinfo')">保存</Button>
         </FormItem>
-        
       </Form>
     </Modal>
 
-    <Drawer title="项目详情" v-model="DrawerValue1" width="500"  :styles="styles" :transfer=false>
+    <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
       <Form :model="formItem">
         <FormItem label="Input">
           <Input v-model="formItem.input" placeholder="Enter something..."></Input>
@@ -291,7 +290,7 @@
         <FormItem label="DatePicker">
           <Row>
             <Col span="11">
-              <DatePicker type="date" placeholder="Select date" v-model="formItem.date"></DatePicker>
+              <DatePicker type="date" pl务简介aceholder="Select date" v-model="formItem.date"></DatePicker>
             </Col>
             <Col span="2" style="text-align: center">-</Col>
             <Col span="11">
@@ -335,9 +334,8 @@
           <Button style="margin-left: 8px">Cancel</Button>
         </FormItem>
       </Form>
-    </Drawer-->
+    </Drawer>
   </div>
-  
 </template>
 
 <script>
@@ -347,8 +345,8 @@ export default {
       //projectid:
 
       //wsg
+      projectInfo: "",
       projectId: "",
-      show: true,
       DrawerValue1: false,
       styles: {
         height: "calc(100% - 55px)",
@@ -367,7 +365,7 @@ export default {
         slider: [20, 50],
         textarea: ""
       },
-      
+
       //shz
       createtask: false,
       changetask: false,
@@ -387,10 +385,10 @@ export default {
             message: "请填写任务名称",
             trigger: "blur"
           }
-        ],
+        ]
       },
       tasklist: "",
-      value1: false,
+      value1: false
       // start-date-limit: {
       //     disabledDate (date) {
       //         return date && date.valueOf() < Date.now() - 86400000;
@@ -405,28 +403,47 @@ export default {
   },
   //渲染task
   created: function() {
-
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
     console.log(this.projectId);
 
+    this.axios
+      .get("http://localhost:8090/projects/tasks", {
+        params: { project_id: this.projectId }
+      })
+      .then(response => {
+        if (response.data.code == 200) {
+          this.projectInfo = response.data.data.project;
+          this.tasklist = response.data.data.tasks;
+          console.log("aaa", this.projectInfo);
+        }
+        else{
+          this.$Message.error("请求失败");
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+
     //shz
-    this.axios.get("http://localhost:8090/projects/tasks?project_id=" + this.projectId).then((response) => {
-      if(response.data.code==200) {
-        this.tasklist=response.data.data;
-      } else {
-        this.$Message.error("权限错误");
-      }
-    }).catch(function(error) {
-      console.log(error);
-    });
+    // this.axios.get("http://localhost:8090/projects/tasks?project_id=" + this.projectId).then((response) => {
+    //   if(response.data.code==200) {
+    //     this.tasklist=response.data.data;
+    //     console.log(this.tasklist);
+    //   } else {
+    //     this.$Message.error("权限错误");
+    //   }
+    // }).catch(function(error) {
+    //   console.log(error);
+    // });
   },
+
   methods: {
     changeLevel(level) {
       this.taskinfo.level = level;
       this.poptipShow = false;
     },
-    handleSubmit(name) {  
+    handleSubmit(name) {
       // 审核数据
       this.$refs[name].validate(valid => {
         if (valid) {
@@ -461,7 +478,7 @@ export default {
         }
       });
     }
-  },
+  }
 };
 function getFormatDate(date) {
   var seperator1 = "-";
@@ -481,10 +498,10 @@ function getFormatDate(date) {
 
 <style scoped lang="scss">
 .task-classify-title {
-    margin-left: 14px;
-    font-size: 18px;
-    color: #333;
-  }
+  margin-left: 14px;
+  font-size: 18px;
+  color: #333;
+}
 .projecttitle {
   font-style: "Hiragino Sans GB";
   color: #464c5b;

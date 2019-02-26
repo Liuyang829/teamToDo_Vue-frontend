@@ -139,6 +139,17 @@ export default {
         ]
       },
       projects: "",
+      // options3: {
+      //       disabledDate (date) {
+      //           return date && date.valueOf() < Date.now() - 86400000;
+      //       }
+      //   },
+      // options4: {
+      //   disabledDate (date) {
+      //       const disabledDay = date.getDate();
+      //       return disabledDay === 15;
+      //   }
+      // },
     };
   },
 

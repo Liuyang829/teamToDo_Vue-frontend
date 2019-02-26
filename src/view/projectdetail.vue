@@ -3,7 +3,7 @@
     <Row>
       <Col span="6" offset="8">
         <div class="projecttitle">
-          <p align="center">{{projectInfo.name}}</p>
+          <p align="center">{{projectId}}</p>
         </div>
       </Col>
       <Col span="6" offset="4">
@@ -262,7 +262,7 @@
       </Form>
     </Modal-->
 
-    <Drawer title="项目详情" v-model="DrawerValue1" width="500"  :styles="styles" transfer="false">
+    <Drawer title="项目详情" v-model="DrawerValue1" width="500"  :styles="styles" :transfer=false>
       <Form :model="formItem">
         <FormItem label="Input">
           <Input v-model="formItem.input" placeholder="Enter something..."></Input>
@@ -334,7 +334,7 @@ export default {
       //projectid:
 
       //wsg
-      projectInfo: "",
+      projectId: "",
       show: true,
       DrawerValue1: false,
       styles: {
@@ -392,8 +392,11 @@ export default {
     };
   },
   created: function() {
-    //获取跳转页面带来的project信息
-    this.projectInfo = this.$route.params.item;
+
+    //获取跳转页面带来的projectId
+    this.projectId = this.$route.query.projectId;
+    console.log(this.projectId);
+
 
     //shz
     this.axios.get("http://localhost:8090/projects/tasks?project_id={{projectid}}").then((response) => {

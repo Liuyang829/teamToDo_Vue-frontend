@@ -8,7 +8,9 @@
       </Col>
       <Col span="6" offset="4">
         <div align="right">
-          <Button @click="DrawerValue1 = true" type="primary">Open</Button>
+          <Button @click="DrawerValue1 = true" type="text"  ghost>
+            <Icon type="md-person-add" size="30" color="black"/>
+          </Button>
         </div>
       </Col>
     </Row>
@@ -133,7 +135,7 @@
                   </DropdownMenu>
                 </Dropdown> 
               </p>
-              <a @click="changetask = true" slot="extra" @click.prevent="changeLimit">
+              <a @click="changetask = true" slot="extra" >
                 <Icon type="ios-loop-strong"></Icon>+ 详细
               </a>
               <ul>
@@ -260,7 +262,7 @@
       </Form>
     </Modal-->
 
-    <Drawer title="项目详情" v-model="DrawerValue1" width="500" :mask-closable="false" :styles="styles">
+    <Drawer title="项目详情" v-model="DrawerValue1" width="500"  :styles="styles" transfer="false">
       <Form :model="formItem">
         <FormItem label="Input">
           <Input v-model="formItem.input" placeholder="Enter something..."></Input>

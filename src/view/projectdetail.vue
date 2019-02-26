@@ -329,7 +329,31 @@ export default {
   data() {
     // console.log(this.$route.params.title);
     return {
-      //projectid: 
+      //projectid:
+
+      //wsg
+      projectInfo: "",
+      show: true,
+      DrawerValue1: false,
+      styles: {
+        height: "calc(100% - 55px)",
+        overflow: "auto",
+        paddingBottom: "53px",
+        position: "static"
+      },
+      formItem: {
+        input: "",
+        select: "",
+        radio: "male",
+        checkbox: [],
+        switch: true,
+        date: "",
+        time: "",
+        slider: [20, 50],
+        textarea: ""
+      },
+      
+      //shz
       createtask: false,
       changetask: false,
       poptipShow: false,
@@ -366,6 +390,10 @@ export default {
     };
   },
   created: function() {
+    //获取跳转页面带来的project信息
+    this.projectInfo = this.$route.params.item;
+
+    //shz
     this.axios.get("http://localhost:8090/projects/tasks?project_id={{projectid}}").then((response) => {
       tasklist=response.data.data;
       console.log(tasklist);
@@ -412,32 +440,6 @@ export default {
       });
     }
   },
-      projectInfo: "",
-      show: true,
-      DrawerValue1: false,
-      styles: {
-        height: "calc(100% - 55px)",
-        overflow: "auto",
-        paddingBottom: "53px",
-        position: "static"
-      },
-      formItem: {
-        input: "",
-        select: "",
-        radio: "male",
-        checkbox: [],
-        switch: true,
-        date: "",
-        time: "",
-        slider: [20, 50],
-        textarea: ""
-      }
-    };
-  },
-  created: function() {
-    this.projectInfo = this.$route.params.item;
-  },
-  methods: {}
 };
 </script>
 

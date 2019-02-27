@@ -34,6 +34,17 @@ export default {
     };
   },
 
+  created:function(){
+			// 主页添加键盘事件,注意,不能直接在焦点事件上添加回车
+			var that=this;
+			document.onkeydown=function(e){
+				var key=window.event.keyCode;
+				if(key==13){
+					that.handleSubmit('formCustom');
+				}
+			}
+		},
+
   methods: {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
@@ -47,6 +58,10 @@ export default {
             .post("http://localhost:8090/login/", formData)
             .then(res => {
               if (res.data.code == 200) {
+
+                console.log(res.data.data);
+                localStorage.setItem('userInfo',JSON.stringify(res.data.data));
+
                 this.$Message.success("Success!");
                 this.$router.push("home");
               } else {

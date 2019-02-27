@@ -6,10 +6,11 @@
           <p align="center">{{projectInfo.name}}</p>
         </div>
       </Col>
+
       <Col span="6" offset="4">
         <div align="right">
-          <Button @click="ProjectInfoDraw = true" type="text" ghost>
-            <Icon type="md-person-add" size="30" color="black"/>
+          <Button @click="showDrawer()" type="text" ghost>
+            <Icon type="md-options" size="30" color="black"/>
           </Button>
           <Button @click="Message = true" type="text" ghost>
             <Icon type="ios-chatboxes" size="30" color="black"/>
@@ -221,7 +222,7 @@
 
         <FormItem prop="owner_id">
           <Select v-model="taskinfo.member" placeholder="负责人(必选)">
-            <Option v-for="memberitem in projectmember" :key="memberitem.id" :value="memberitem.id">{{memberitem.name}}</Option>
+            <Option v-for="memberitem in projectmembers" :key="memberitem.id" :value="memberitem.id">{{memberitem.name}}</Option>
           </Select>
         </FormItem>
 
@@ -292,63 +293,84 @@
       </Form>
     </Drawer>
 
-    <Drawer title="项目详情" v-model="ProjectInfoDraw" width="500" :styles="styles" :transfer="false">
-      <Form :model="formItem">
-        <FormItem label="Input">
-          <Input v-model="formItem.input" placeholder="Enter something..."></Input>
+    <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
+      <Divider orientation="center">项目详情</Divider>
+      <Form :model="formItem" label-position="top">
+        <FormItem label="项目名称">
+          <Input v-model="formItem.projectName" placeholder="输入项目名称"></Input>
         </FormItem>
-        <FormItem label="Select">
-          <Select v-model="formItem.select">
-            <Option value="beijing">New York</Option>
-            <Option value="shanghai">London</Option>
-            <Option value="shenzhen">Sydney</Option>
+
+        <FormItem label="项目简介">
+          <Input
+            v-model="formItem.projectDesc"
+            type="textarea"
+            :autosize="{minRows: 2,maxRows: 5}"
+            placeholder="输入项目简介"
+          ></Input>
+        </FormItem>
+
+        <FormItem label="项目级别">
+          <Select v-model="formItem.level">
+            <Option value="普通">普通</Option>
+            <Option value="紧急">紧急</Option>
+            <Option value="非常紧急">非常紧急</Option>
           </Select>
         </FormItem>
-        <FormItem label="DatePicker">
+
+        <FormItem label="时间">
           <Row>
-            <Col span="11">
-              <DatePicker type="date" placeholder="Select date" v-model="formItem.date"></DatePicker>
+            <Col span="11" align="center">
+              <DatePicker size="large" type="date" placeholder="开始日期" v-model="formItem.start_time"></DatePicker>
             </Col>
             <Col span="2" style="text-align: center">-</Col>
-            <Col span="11">
-              <TimePicker type="time" placeholder="Select time" v-model="formItem.time"></TimePicker>
+            <Col span="11" align="center">
+              <DatePicker size="large" type="date" placeholder="结束日期" v-model="formItem.end_time"></DatePicker>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="Radio">
-          <RadioGroup v-model="formItem.radio">
-            <Radio label="male">Male</Radio>
-            <Radio label="female">Female</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="Checkbox">
-          <CheckboxGroup v-model="formItem.checkbox">
-            <Checkbox label="Eat"></Checkbox>
-            <Checkbox label="Sleep"></Checkbox>
-            <Checkbox label="Run"></Checkbox>
-            <Checkbox label="Movie"></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="Switch">
-          <i-switch v-model="formItem.switch" size="large">
-            <span slot="open">On</span>
-            <span slot="close">Off</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="Slider">
-          <Slider v-model="formItem.slider" range></Slider>
-        </FormItem>
-        <FormItem label="Text">
-          <Input
-            v-model="formItem.textarea"
-            type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
-            placeholder="Enter something..."
-          ></Input>
-        </FormItem>
+
         <FormItem>
-          <Button type="primary">Submit</Button>
-          <Button style="margin-left: 8px">Cancel</Button>
+          <div align="center">
+            <Button type="primary">修改</Button>
+            <Button style="margin-left: 8px" @click="DrawerValue1=false">取消</Button>
+          </div>
+        </FormItem>
+      </Form>
+
+      <Divider orientation="center">项目成员</Divider>
+      <ul>
+        <li v-for="member in projectmembers" :key="member">
+          <Card long>
+            <Row type="flex" justify="center" align="middle">
+              <Col span="12">
+                <div>
+                  <h3>{{ member.name }}</h3>
+                  <h5>{{ member.email }}</h5>
+                </div>
+              </Col>
+              <Col span="12" align="right">
+                <h3 v-if="member.role=='creator'">创建者</h3>
+                <Button
+                  type="error"
+                  size="small"
+                  shape="circle"
+                  icon="md-close"
+                  v-if="member.role=='member'"
+                ></Button>
+              </Col>
+            </Row>
+          </Card>
+        </li>
+      </ul>
+      <br>
+
+      <Form :model="formInvite" :rules="inviteRule">
+        <FormItem prop="emailInvite">
+          <Input v-model="formInvite.emailInvite" size="large" placeholder="输入邮箱添加项目成员..."/>
+        </FormItem>
+
+        <FormItem>
+          <Button type="success" @click="inviteMember()" long>邀请</Button>
         </FormItem>
       </Form>
     </Drawer>
@@ -363,27 +385,35 @@ export default {
   data() {
     return {
       //wsg
+      userInfo: JSON.parse(localStorage.getItem("userInfo")),
       projectInfo: "",
       projectId: "",
-      projectmember: "",
+      projectmembers: "",
       ProjectInfoDraw: false,
       Message: false,
+      DrawerValue1: false,
+      
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
         position: "static"
       },
+      formInvite: {
+        emailInvite: ""
+      },
+      inviteRule: {
+        emailInvite: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          { type: "email", message: "邮箱格式不正确", trigger: "blur" }
+        ]
+      },
       formItem: {
-        input: "",
-        select: "",
-        radio: "male",
-        checkbox: [],
-        switch: true,
-        date: "",
-        time: "",
-        slider: [20, 50],
-        textarea: ""
+        projectName: "",
+        projectDesc: "",
+        level: "",
+        start_time: "",
+        end_time: ""
       },
 
       //shz
@@ -423,33 +453,47 @@ export default {
   },
   //渲染task
   created: function() {
+    console.log(this.userInfo);
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
-    console.log(this.projectId);
-    //获取task
+
+    //获取项目详情和任务列表
     this.axios
       .get("http://localhost:8090/projects/tasks", {
         params: { project_id: this.projectId }
       })
       .then(response => {
         if (response.data.code == 200) {
+          console.log(response);
           this.projectInfo = response.data.data.project;
           this.tasklist = response.data.data.tasks;
-          this.projectmember = response.data.data.members;
+          this.projectmembers = response.data.data.members;
           console.log("tasklist:");
           console.log(this.tasklist);
-          console.log("projectmember:");
-          console.log(this.projectmember);
+          console.log("projectmembers:");
+          console.log(this.projectmembers);
         } else {
           this.$Message.error("权限错误");
-        }
+        } 
       })
       .catch(function(error) {
         console.log(error);
       });
+
   },
 
   methods: {
+    showDrawer() {
+      this.DrawerValue1 = true;
+      this.formItem.projectName = this.projectInfo.name;
+      this.formItem.projectDesc = this.projectInfo.description;
+      this.formItem.level = this.projectInfo.level;
+      this.formItem.start_time = this.projectInfo.start_time;
+      this.formItem.end_time = this.projectInfo.end_time;
+    },
+    inviteMember() {
+      console.log(this.formInvite.emailInvite);
+    },
     changeLevel(level) {
       this.taskinfo.level = level;
       this.poptipShow = false;

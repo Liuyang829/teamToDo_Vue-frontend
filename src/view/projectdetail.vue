@@ -277,6 +277,7 @@
     </Modal>
 
     <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
+      <Divider orientation="center">项目详情</Divider>
       <Form :model="formItem" label-position="top">
         <FormItem label="项目名称">
           <Input v-model="formItem.projectName" placeholder="输入项目名称"></Input>
@@ -299,7 +300,7 @@
           </Select>
         </FormItem>
 
-        <FormItem label="时间" >
+        <FormItem label="时间">
           <Row>
             <Col span="11" align="center">
               <DatePicker size="large" type="date" placeholder="开始日期" v-model="formItem.start_time"></DatePicker>
@@ -313,24 +314,48 @@
 
         <FormItem>
           <div align="center">
-            <Button type="primary">Submit</Button>
-            <Button style="margin-left: 8px">Cancel</Button>
+            <Button type="primary">修改</Button>
+            <Button style="margin-left: 8px" @click="DrawerValue1=false">取消</Button>
           </div>
         </FormItem>
       </Form>
 
-      <Divider orientation="left">项目成员</Divider>
+      <Divider orientation="center">项目成员</Divider>
       <ul>
-        <li v-for="n in [1,2,3]" :key="n">
+        <li v-for="member in projectMemebers" :key="member">
           <Card long>
-            <div style="text-align:center">
-              <h3>A high quality UI Toolkit based on Vue.js</h3>
-            </div>
+            <Row type="flex" justify="center" align="middle">
+              <Col span="12">
+                <div>
+                  <h3>{{ member.name }}</h3>
+                  <h5>{{ member.email }}</h5>
+                </div>
+              </Col>
+              <Col span="12" align="right">
+                <h3 v-if="member.role=='creator'">创建者</h3>
+                <Button
+                  type="error"
+                  size="small"
+                  shape="circle"
+                  icon="md-close"
+                  v-if="member.role=='member'"
+                ></Button>
+              </Col>
+            </Row>
           </Card>
         </li>
       </ul>
       <br>
-      <Input v-model="showDrawer" size="large" placeholder="large size" />
+
+      <Form :model="formInvite" :rules="inviteRule">
+        <FormItem prop="emailInvite">
+          <Input v-model="formInvite.emailInvite" size="large" placeholder="输入邮箱添加项目成员..."/>
+        </FormItem>
+
+        <FormItem>
+          <Button type="success" @click="inviteMember()" long>邀请</Button>
+        </FormItem>
+      </Form>
     </Drawer>
   </div>
 </template>
@@ -346,11 +371,21 @@ export default {
       projectInfo: "",
       projectId: "",
       DrawerValue1: false,
+      projectMemebers: "",
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
         paddingBottom: "53px",
         position: "static"
+      },
+      formInvite: {
+        emailInvite: ""
+      },
+      inviteRule: {
+        emailInvite: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          { type: "email", message: "邮箱格式不正确", trigger: "blur" }
+        ]
       },
       formItem: {
         projectName: "",
@@ -398,19 +433,36 @@ export default {
   //渲染task
   created: function() {
     console.log(this.userInfo);
-
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
 
+    //获取项目详情和任务列表
     this.axios
       .get("http://localhost:8090/projects/tasks", {
         params: { project_id: this.projectId }
       })
       .then(response => {
         if (response.data.code == 200) {
+          console.log(response);
           this.projectInfo = response.data.data.project;
-          console.log(this.projectInfo);
           this.tasklist = response.data.data.tasks;
+        } else {
+          this.$Message.error("请求失败");
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+
+    //获取项目成员
+    this.axios
+      .get("http://localhost:8090/projects/members", {
+        params: { project_id: this.projectId }
+      })
+      .then(response => {
+        if (response.data.code == 200) {
+          this.projectMemebers = response.data.data;
+          console.log("members", this.projectMemebers);
         } else {
           this.$Message.error("请求失败");
         }
@@ -440,6 +492,9 @@ export default {
       this.formItem.level = this.projectInfo.level;
       this.formItem.start_time = this.projectInfo.start_time;
       this.formItem.end_time = this.projectInfo.end_time;
+    },
+    inviteMember() {
+      console.log(this.formInvite.emailInvite);
     },
     changeLevel(level) {
       this.taskinfo.level = level;

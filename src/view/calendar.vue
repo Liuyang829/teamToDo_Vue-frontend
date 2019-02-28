@@ -61,7 +61,7 @@ export default {
       var projectId = event.id;
       this.$router.push({
         path: "/projectdetail",
-        query: { projectID: projectId }
+        query: { projectId: projectId }
       });
     }
   },

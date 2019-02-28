@@ -1,19 +1,26 @@
 <template>
   <div>
     <Row>
-      <Col span="6" offset="8">
+      <Col span="8">
+        <div>
+          <Button @click="this.$router.push()" type="text" ghost>
+            <Icon type="md-arrow-back" size="30" color="black"/>
+          </Button>
+        </div>
+      </Col>
+      <Col span="8" >
         <div class="projecttitle">
-          <p align="center">{{projectInfo.name}}</p>
+          <h2 align="center">{{projectInfo.name}}</h2>
         </div>
       </Col>
 
-      <Col span="6" offset="4">
+      <Col span="8" >
         <div align="right">
-          <Button @click="showDrawer()" type="text" ghost>
-            <Icon type="md-options" size="30" color="black"/>
-          </Button>
           <Button @click="Message = true" type="text" ghost>
             <Icon type="ios-chatboxes" size="30" color="black"/>
+          </Button>
+          <Button @click="showDrawer()" type="text" ghost>
+            <Icon type="md-settings" size="30" color="black"/>
           </Button>
         </div>
       </Col>
@@ -24,7 +31,7 @@
       <Col span="8" id="waiting">
         <ul>
           <li class="task-classify-title">
-            <p justify="center">待分配</p>
+            <h3 justify="center">待分配</h3>
           </li>
           <br>
 
@@ -74,7 +81,7 @@
       <Col span="8" id="running">
         <ul>
           <li class="task-classify-title">
-            <p justify="center">进行中</p>
+            <h3 justify="center">进行中</h3>
           </li>
           <br>
 
@@ -120,7 +127,7 @@
       <Col span="8" id="finished">
         <ul>
           <li class="task-classify-title">
-            <p justify="center">已完成</p>
+            <h3 justify="center">已完成</h3>
           </li>
           <br>
 
@@ -222,7 +229,11 @@
 
         <FormItem prop="owner_id">
           <Select v-model="taskinfo.member" placeholder="负责人(必选)">
-            <Option v-for="memberitem in projectmembers" :key="memberitem.id" :value="memberitem.id">{{memberitem.name}}</Option>
+            <Option
+              v-for="memberitem in projectmembers"
+              :key="memberitem.id"
+              :value="memberitem.id"
+            >{{memberitem.name}}</Option>
           </Select>
         </FormItem>
 
@@ -231,67 +242,6 @@
         </FormItem>
       </Form>
     </Modal>
-
-    <Drawer title="项目详情" v-model="ProjectInfoDraw" width="500" :styles="styles" :transfer="false">
-      <Form :model="formItem">
-        <FormItem label="Input">
-          <Input v-model="formItem.input" placeholder="Enter something..."></Input>
-        </FormItem>
-        <FormItem label="Select">
-          <Select v-model="formItem.select">
-            <Option value="beijing">New York</Option>
-            <Option value="shanghai">London</Option>
-            <Option value="shenzhen">Sydney</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="DatePicker">
-          <Row>
-            <Col span="11">
-              <DatePicker type="date" placeholder="Select date" v-model="formItem.date"></DatePicker>
-            </Col>
-            <Col span="2" style="text-align: center">-</Col>
-            <Col span="11">
-              <TimePicker type="time" placeholder="Select time" v-model="formItem.time"></TimePicker>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="Radio">
-          <RadioGroup v-model="formItem.radio">
-            <Radio label="male">Male</Radio>
-            <Radio label="female">Female</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="Checkbox">
-          <CheckboxGroup v-model="formItem.checkbox">
-            <Checkbox label="Eat"></Checkbox>
-            <Checkbox label="Sleep"></Checkbox>
-            <Checkbox label="Run"></Checkbox>
-            <Checkbox label="Movie"></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="Switch">
-          <i-switch v-model="formItem.switch" size="large">
-            <span slot="open">On</span>
-            <span slot="close">Off</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="Slider">
-          <Slider v-model="formItem.slider" range></Slider>
-        </FormItem>
-        <FormItem label="Text">
-          <Input
-            v-model="formItem.textarea"
-            type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
-            placeholder="Enter something..."
-          ></Input>
-        </FormItem>
-        <FormItem>
-          <Button type="primary">Submit</Button>
-          <Button style="margin-left: 8px">Cancel</Button>
-        </FormItem>
-      </Form>
-    </Drawer>
 
     <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
       <Divider orientation="center">项目详情</Divider>
@@ -340,7 +290,7 @@
       <Divider orientation="center">项目成员</Divider>
       <ul>
         <li v-for="member in projectmembers" :key="member">
-          <Card long>
+          <Card long v-model="show">
             <Row type="flex" justify="center" align="middle">
               <Col span="12">
                 <div>
@@ -374,14 +324,13 @@
         </FormItem>
       </Form>
     </Drawer>
-
   </div>
 </template>
 
 <script>
 import qs from "qs";
 export default {
-  inject:['reload'],
+  inject: ["reload"],
   data() {
     return {
       //wsg
@@ -392,7 +341,7 @@ export default {
       ProjectInfoDraw: false,
       Message: false,
       DrawerValue1: false,
-      
+
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -474,12 +423,11 @@ export default {
           console.log(this.projectmembers);
         } else {
           this.$Message.error("权限错误");
-        } 
+        }
       })
       .catch(function(error) {
         console.log(error);
       });
-
   },
 
   methods: {
@@ -493,6 +441,31 @@ export default {
     },
     inviteMember() {
       console.log(this.formInvite.emailInvite);
+      let data = {
+        project_id: this.projectId,
+        email: this.formInvite.emailInvite
+      };
+
+      this.axios
+        .post("http://localhost:8090/invitations", qs.stringify(data))
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            console.log(response);
+            this.$Modal.success({
+              title: "邀请成功",
+              content: "等待对方确认"
+            });
+          } else {
+            this.$Modal.error({
+              title: "邀请失败",
+              content: response.data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     changeLevel(level) {
       this.taskinfo.level = level;
@@ -503,7 +476,7 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           // 建数据包
-          
+
           let data = {
             project_id: this.projectId,
             name: this.taskinfo.name,
@@ -512,13 +485,13 @@ export default {
             state: "待分配",
             start_time: getFormatDate(new Date(this.taskinfo.start_time)),
             end_time: getFormatDate(new Date(this.taskinfo.end_time)),
-            owner_id: this.taskinfo.member,
+            owner_id: this.taskinfo.member
           };
           console.log(data);
           // POST
           this.axios
             .post("http://localhost:8090/projects/tasks/", qs.stringify(data))
-            .then((response) => {
+            .then(response => {
               console.log(response);
               if (response.data.code == 200) {
                 console.log(111);
@@ -528,7 +501,8 @@ export default {
               } else {
                 this.$Message.error("任务创建失败");
               }
-            }).catch(error => {
+            })
+            .catch(error => {
               console.log(error);
             });
         } else {
@@ -538,15 +512,15 @@ export default {
     },
 
     deletetask(taskid) {
-      console.log("delete task:",taskid);
+      console.log("delete task:", taskid);
       let data = {
         project_id: this.projectId,
-        task_id: String(taskid),
+        task_id: String(taskid)
       };
       console.log(data);
       this.axios
-        .delete("http://localhost:8090/projects/tasks/", {params:data})
-        .then((response) => {
+        .delete("http://localhost:8090/projects/tasks/", { params: data })
+        .then(response => {
           console.log("response");
           if (response.data.code == 200) {
             this.$Message.success("任务删除成功");
@@ -554,10 +528,11 @@ export default {
           } else {
             this.$Message.error("任务删除失败");
           }
-        }).catch(error => {
+        })
+        .catch(error => {
           console.log(error);
         });
-    },
+    }
   }
 };
 function getFormatDate(date) {

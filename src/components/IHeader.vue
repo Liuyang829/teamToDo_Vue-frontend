@@ -51,11 +51,11 @@
       <a href="javascript:" class="btn" @click="calendar()">日历</a>
       <!-- <Icon type="ios-help-circle-outline" /> -->
       &nbsp;
-      <Badge :count="count1" class="demo-badge">
+      <Badge dot :count="count1" class="demo-badge">
         <Button type="text" shape="circle" icon="ios-notifications-outline" size="small" @click="modal1 = true"></Button>
       </Badge>
       &nbsp;
-      <Badge :count="count2">
+      <Badge dot :count="count2">
         <Button type="text" shape="circle" icon="md-text" size="small"></Button>
       </Badge>
 
@@ -81,26 +81,30 @@
       </Poptip>
     </div>
 
-    <Modal v-model="modal1" title="项目邀请信息" :scrollable="true">
+    <Modal v-model="modal1" title="项目邀请信息">
       <li type="none">
-        具体信息：
+        <h5>
+          具体信息：
+        </h5>
       </li>
-      <li class="invite-item" v-for="(invitationitem,index) in invitationList" data-index="index" :key="index" type="none">
-        <div>
-          <Card v-if="card[index]" long>
-            <ul>
-              <li>项目名称：{{invitationitem.project_name}}</li>
-              <Divider class="div" />
-              <li>发起人：{{invitationitem.inviter}}</li>
-              <Divider class="div" />
-              <div align="right">
-                <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
-                <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
-              </div>
-            </ul>
-          </Card>
-        </div>
-      </li>
+      <Scroll>
+        <li class="invite-item" v-for="(invitationitem,index) in invitationList" data-index="index" :key="index" type="none">
+          <div>
+            <Card v-if="card[index]" long>
+              <ul>
+                <li>项目名称：{{invitationitem.project_name}}</li>
+                <Divider class="div" />
+                <li>发起人：{{invitationitem.inviter}}</li>
+                <Divider class="div" />
+                <div align="right">
+                  <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
+                  <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
+                </div>
+              </ul>
+            </Card>
+          </div>
+        </li>
+      </Scroll>
     </Modal>
   </div>
 
@@ -116,31 +120,55 @@ export default {
       count1: 0,
       count2: 0,
       card: [],
-      invitationList: ""
+      invitationList: "",
+      timer: null,
     };
   },
   created: function() {
+    // this.getFamilyBase_info();
+    clearInterval(this.timer);
+    this.timer = null;
+    this.setTimer();
     console.log("123456", "this is header");
-    this.axios
-      .get("http://localhost:8090/invitations/received")
-      .then(res => {
-        if (res.data.code == 200) {
-          this.invitationList = res.data.data;
-          console.log(this.invitationList.length);
-          this.count1 += res.data.data.length;
-          console.log(this.count1);
-          var i = 0;
-          for (i = 0; i < this.invitationList.length; i++) {
-            this.card.push(true);
-          }
-          console.log(this.card);
-        }
-      })
-      .catch(res => {
-        console.log(res);
-      });
+    this.getList();
+  },
+  destroyed: function() {
+    clearInterval(this.timer);
+    this.timer = null;
   },
   methods: {
+    getList() {
+      this.axios
+        .get("http://localhost:8090/invitations/received")
+        .then(res => {
+          if (res.data.code == 200) {
+            this.invitationList = res.data.data;
+            console.log(this.invitationList.length);
+            this.count1=0;
+            this.count1 += res.data.data.length;
+            console.log(this.count1);
+            this.card = [];
+            var i = 0;
+            for (i = 0; i < this.invitationList.length; i++) {
+              this.card.push(true);
+            }
+            // console.log(this.card);
+          }
+        })
+        .catch(res => {
+          console.log(res);
+        });
+    },
+    setTimer() {
+      if (this.timer == null) {
+        this.timer = setInterval(() => {
+          console.log("this is timer", "定时发生（10s)");
+          this.getList();
+          console.log("count1",this.count1);
+          
+        }, 10000);
+      }
+    },
     //接受邀请
     accept(invitation_id, index) {
       console.log("this is index", index);
@@ -155,6 +183,8 @@ export default {
           if (response.data.code == 200) {
             this.$Message.success("接受成功");
             this.count1 -= 1;
+            console.log("count1:",this.count1);
+            
             this.card[index] = false;
           } else {
             this.$Message.error("接受失败");
@@ -178,6 +208,8 @@ export default {
           if (response.data.code == 200) {
             this.$Message.success("拒绝成功");
             this.count1 -= 1;
+            console.log("count1:",this.count1);
+            
             this.card[index] = false;
           } else {
             this.$Message.error("拒绝失败");
@@ -274,8 +306,10 @@ export default {
   .avatar {
     margin-left: 10px;
   }
-  .demo-badge {
-    border-radius: 3px;
+  .invitationtitle {
+    font-style: "Hiragino Sans GB";
+    color: #464c5b;
+    font-size: 30px;
   }
 }
 </style>

@@ -1,8 +1,9 @@
 <template>
+  <!-- import loginVue from '../view/login.vue'; -->
   <div class="header">
     <Poptip trigger="click" content="content" placement="bottom-start">
       <a href="javascript:" class="header-left">
-        <Icon type="ios-list"/>
+        <Icon type="ios-list" />
         <p>深圳402科技有限公司</p>
       </a>
       <div class="header-left-pop" slot="content">
@@ -10,12 +11,12 @@
           <CellGroup>
             <Cell title="创建企业" selected/>
             <Cell title="test">
-              <Badge class="header-badge" text="剩于14天" slot="extra"/>
+              <Badge class="header-badge" text="剩于14天" slot="extra" />
             </Cell>
             <Cell title="贵州蓝关科技有限公司">
-              <Badge class="header-badge" text="已到期" slot="extra"/>
+              <Badge class="header-badge" text="已到期" slot="extra" />
             </Cell>
-            <Cell title="个人项目"/>
+            <Cell title="个人项目" />
           </CellGroup>
         </Card>
       </div>
@@ -24,37 +25,37 @@
     <Poptip trigger="click" content="content">
       <div class="header-center">
         <h1>diandianrenwu</h1>
-        <Icon type="md-apps"/>
+        <Icon type="md-apps" />
       </div>
       <div class="header-center-pop" slot="content">
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="logo-linkedin"/>
+          <Icon class="header-center-pop-icon" type="logo-linkedin" />
           <span>Teambition</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-contacts"/>
+          <Icon class="header-center-pop-icon" type="md-contacts" />
           <span>成员</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-pie"/>
+          <Icon class="header-center-pop-icon" type="md-pie" />
           <span>统计</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-settings"/>
+          <Icon class="header-center-pop-icon" type="md-settings" />
           <span>管理后台</span>
         </div>
       </div>
     </Poptip>
     <div class="header-right">
       <a href="javascript:" class="btn">工作台</a>
-      <a href="javascript:" class="btn" @click="calendar">日历</a>
+      <a href="javascript:" class="btn" @click="calendar()">日历</a>
       <!-- <Icon type="ios-help-circle-outline" /> -->
       &nbsp;
-      <Badge dot :count="count1">
+      <Badge :count="count1" class="demo-badge">
         <Button type="text" shape="circle" icon="ios-notifications-outline" size="small" @click="modal1 = true"></Button>
       </Badge>
       &nbsp;
-      <Badge dot :count="count2">
+      <Badge :count="count2">
         <Button type="text" shape="circle" icon="md-text" size="small"></Button>
       </Badge>
 
@@ -62,41 +63,51 @@
 
       </Poptip>
       <Poptip class="avatar-wrap" placement="bottom-end">
-        <Avatar size="large" class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
+        <Avatar size="large" class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
         <div class="poptip-content" slot="content">
           <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
             <CellGroup>
               <Cell title="创建企业" selected/>
-              <Cell title="个人项目"/>
+              <Cell title="个人项目" />
               <Divider/>
-              <Cell title="账号设置"/>
-              <Cell title="偏好设置"/>
-              <Cell title="切换至国际服务器" label="正在使用中国大陆服务器"/>
+              <Cell title="账号设置" />
+              <Cell title="偏好设置" />
+              <Cell title="切换至国际服务器" label="正在使用中国大陆服务器" />
               <Divider/>
-              <Cell title="退出"/>
+              <Cell title="退出" />
             </CellGroup>
           </Card>
         </div>
       </Poptip>
     </div>
-    <Modal v-model="modal1" title="You Received a New Invitation ">
-      <template>
-        <Table border :columns="columns12" :data="data6">
-          <template slot-scope="{ row }" slot="name">
-            <strong>{{ row.name }}</strong>
-          </template>
-          <template slot-scope="{ row, index }" slot="action">
-            <Button type="primary" size="small">View</Button>
-            <Button type="error" size="small" >Delete</Button>
-          </template>
-        </Table>
-      </template>
+
+    <Modal v-model="modal1" title="项目邀请信息" :scrollable="true">
+      <li type="none">
+        具体信息：
+      </li>
+      <li class="invite-item" v-for="(invitationitem,index) in invitationList" data-index="index" :key="index" type="none">
+        <div>
+          <Card v-if="card[index]" long>
+            <ul>
+              <li>项目名称：{{invitationitem.project_name}}</li>
+              <Divider class="div" />
+              <li>发起人：{{invitationitem.inviter}}</li>
+              <Divider class="div" />
+              <div align="right">
+                <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
+                <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
+              </div>
+            </ul>
+          </Card>
+        </div>
+      </li>
     </Modal>
   </div>
 
 </template>
 
 <script>
+import qs from "qs";
 export default {
   name: "IHeader",
   data() {
@@ -104,50 +115,8 @@ export default {
       modal1: false,
       count1: 0,
       count2: 0,
-      invitationList: "",
-      columns12: [
-        {
-          title: "Name",
-          slot: "name",
-          key:"name"
-        },
-        {
-          title: "Age",
-          key: "age"
-        },
-        {
-          title: "Address",
-          key: "address"
-        },
-        {
-          title: "Action",
-          slot: "action",
-          width: 150,
-          align: "center"
-        }
-      ],
-      data6: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park"
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park"
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park"
-        }
-      ]
+      card: [],
+      invitationList: ""
     };
   },
   created: function() {
@@ -160,7 +129,11 @@ export default {
           console.log(this.invitationList.length);
           this.count1 += res.data.data.length;
           console.log(this.count1);
-          
+          var i = 0;
+          for (i = 0; i < this.invitationList.length; i++) {
+            this.card.push(true);
+          }
+          console.log(this.card);
         }
       })
       .catch(res => {
@@ -168,14 +141,57 @@ export default {
       });
   },
   methods: {
-    accept(project_id){
-      
+    //接受邀请
+    accept(invitation_id, index) {
+      console.log("this is index", index);
+
+      let data = {
+        invitation_id: parseInt(invitation_id)
+      };
+      this.axios
+        .post("http://localhost:8090/invitations/received", qs.stringify(data))
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            this.$Message.success("接受成功");
+            this.count1 -= 1;
+            this.card[index] = false;
+          } else {
+            this.$Message.error("接受失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //拒绝邀请
+    refuse(invitation_id, index) {
+      // let data = {
+      //   invitation_id: parseInt(invitation_id)
+      // };
+      this.axios
+        .delete("http://localhost:8090/invitations/received", {
+          params: { invitation_id: invitation_id }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            this.$Message.success("拒绝成功");
+            this.count1 -= 1;
+            this.card[index] = false;
+          } else {
+            this.$Message.error("拒绝失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     calendar() {
       this.$router.push("calendar");
+    }
   }
-  }
-  };
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -257,6 +273,9 @@ export default {
   }
   .avatar {
     margin-left: 10px;
+  }
+  .demo-badge {
+    border-radius: 3px;
   }
 }
 </style>

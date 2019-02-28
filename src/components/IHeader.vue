@@ -1,76 +1,74 @@
 <template>
   <div class="header">
     <Poptip trigger="click" content="content" placement="bottom-start">
-        <a href="javascript:" class="header-left">
-          <Icon type="ios-list" />
-          <p>深圳402科技有限公司</p>
-        </a>
-        <div class="header-left-pop" slot="content">
-          <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-              <CellGroup>
-                  <Cell title="创建企业" selected/>
-                  <Cell title="test">
-                    <Badge class="header-badge" text="剩于14天" slot="extra" />
-                  </Cell>
-                  <Cell title="贵州蓝关科技有限公司">
-                    <Badge class="header-badge" text="已到期" slot="extra" />
-                  </Cell>
-                  <Cell title="个人项目"/>
-              </CellGroup>
-          </Card>
-        </div>
+      <a href="javascript:" class="header-left">
+        <Icon type="ios-list"/>
+        <p>深圳402科技有限公司</p>
+      </a>
+      <div class="header-left-pop" slot="content">
+        <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
+          <CellGroup>
+            <Cell title="创建企业" selected/>
+            <Cell title="test">
+              <Badge class="header-badge" text="剩于14天" slot="extra"/>
+            </Cell>
+            <Cell title="贵州蓝关科技有限公司">
+              <Badge class="header-badge" text="已到期" slot="extra"/>
+            </Cell>
+            <Cell title="个人项目"/>
+          </CellGroup>
+        </Card>
+      </div>
     </Poptip>
-    
+
     <Poptip trigger="click" content="content">
       <div class="header-center">
         <h1>diandianrenwu</h1>
-        <Icon type="md-apps" />
+        <Icon type="md-apps"/>
       </div>
       <div class="header-center-pop" slot="content">
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="logo-linkedin" />
+          <Icon class="header-center-pop-icon" type="logo-linkedin"/>
           <span>Teambition</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-contacts" />
+          <Icon class="header-center-pop-icon" type="md-contacts"/>
           <span>成员</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-pie" />
+          <Icon class="header-center-pop-icon" type="md-pie"/>
           <span>统计</span>
         </div>
         <div class="header-center-pop-item">
-          <Icon class="header-center-pop-icon" type="md-settings" />
+          <Icon class="header-center-pop-icon" type="md-settings"/>
           <span>管理后台</span>
         </div>
       </div>
     </Poptip>
     <div class="header-right">
       <a href="javascript:" class="btn">工作台</a>
-      <a href="javascript:" class="btn">日历</a>
-      <Icon type="ios-help-circle-outline" />
-      <Icon type="ios-notifications-outline" />
-      <Icon type="md-text" />
-      <Poptip >
-        
-      </Poptip>
+      <a href="javascript:" class="btn" @click="calendar">日历</a>
+      <Icon type="ios-help-circle-outline"/>
+      <Icon type="ios-notifications-outline"/>
+      <Icon type="md-text"/>
+      <Poptip></Poptip>
       <Poptip class="avatar-wrap" placement="bottom-end">
-        <Avatar size="large" class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+        <Avatar size="large" class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
         <div class="poptip-content" slot="content">
           <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-              <CellGroup>
-                  <Cell title="创建企业" selected/>
-                  <Cell title="个人项目" />
-                  <Divider />
-                  <Cell title="账号设置"/>
-                  <Cell title="偏好设置" />
-                  <Cell title="切换至国际服务器" label="正在使用中国大陆服务器" />
-                  <Divider />
-                  <Cell title="退出" />
-              </CellGroup>
+            <CellGroup>
+              <Cell title="创建企业" selected/>
+              <Cell title="个人项目"/>
+              <Divider/>
+              <Cell title="账号设置"/>
+              <Cell title="偏好设置"/>
+              <Cell title="切换至国际服务器" label="正在使用中国大陆服务器"/>
+              <Divider/>
+              <Cell title="退出"/>
+            </CellGroup>
           </Card>
         </div>
-    </Poptip>
+      </Poptip>
     </div>
   </div>
 </template>
@@ -80,6 +78,11 @@ export default {
   name: "IHeader",
   data() {
     return {};
+  },
+  methods: {
+    calendar() {
+      this.$router.push("calendar");
+    }
   }
 };
 </script>

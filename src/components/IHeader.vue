@@ -1,26 +1,26 @@
 <template>
   <div class="header">
     <Poptip trigger="click" content="content" placement="bottom-start">
-        <a href="javascript:" class="header-left">
-          <Icon type="ios-list" />
-          <p>深圳402科技有限公司</p>
-        </a>
-        <div class="header-left-pop" slot="content">
-          <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-              <CellGroup>
-                  <Cell title="创建企业" selected/>
-                  <Cell title="test">
-                    <Badge class="header-badge" text="剩于14天" slot="extra" />
-                  </Cell>
-                  <Cell title="贵州蓝关科技有限公司">
-                    <Badge class="header-badge" text="已到期" slot="extra" />
-                  </Cell>
-                  <Cell title="个人项目"/>
-              </CellGroup>
-          </Card>
-        </div>
+      <a href="javascript:" class="header-left">
+        <Icon type="ios-list" />
+        <p>深圳402科技有限公司</p>
+      </a>
+      <div class="header-left-pop" slot="content">
+        <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
+          <CellGroup>
+            <Cell title="创建企业" selected/>
+            <Cell title="test">
+              <Badge class="header-badge" text="剩于14天" slot="extra" />
+            </Cell>
+            <Cell title="贵州蓝关科技有限公司">
+              <Badge class="header-badge" text="已到期" slot="extra" />
+            </Cell>
+            <Cell title="个人项目" />
+          </CellGroup>
+        </Card>
+      </div>
     </Poptip>
-    
+
     <Poptip trigger="click" content="content">
       <div class="header-center">
         <h1>diandianrenwu</h1>
@@ -48,38 +48,129 @@
     <div class="header-right">
       <a href="javascript:" class="btn">工作台</a>
       <a href="javascript:" class="btn">日历</a>
-      <Icon type="ios-help-circle-outline" />
-      <Icon type="ios-notifications-outline" />
-      <Icon type="md-text" />
-      <Poptip >
-        
+      <!-- <Icon type="ios-help-circle-outline" /> -->
+      &nbsp;
+      <Badge dot :count="count1">
+        <Button type="text" shape="circle" icon="ios-notifications-outline" size="small" @click="modal1 = true"></Button>
+      </Badge>
+      &nbsp;
+      <Badge dot :count="count2">
+        <Button type="text" shape="circle" icon="md-text" size="small"></Button>
+      </Badge>
+
+      <Poptip>
+
       </Poptip>
       <Poptip class="avatar-wrap" placement="bottom-end">
         <Avatar size="large" class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
         <div class="poptip-content" slot="content">
           <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-              <CellGroup>
-                  <Cell title="创建企业" selected/>
-                  <Cell title="个人项目" />
-                  <Divider />
-                  <Cell title="账号设置"/>
-                  <Cell title="偏好设置" />
-                  <Cell title="切换至国际服务器" label="正在使用中国大陆服务器" />
-                  <Divider />
-                  <Cell title="退出" />
-              </CellGroup>
+            <CellGroup>
+              <Cell title="创建企业" selected/>
+              <Cell title="个人项目" />
+              <Divider />
+              <Cell title="账号设置" />
+              <Cell title="偏好设置" />
+              <Cell title="切换至国际服务器" label="正在使用中国大陆服务器" />
+              <Divider />
+              <Cell title="退出" />
+            </CellGroup>
           </Card>
         </div>
-    </Poptip>
+      </Poptip>
     </div>
+    <Modal v-model="modal1" title="You Received a New Invitation ">
+      <template>
+        <Table border :columns="columns12" :data="data6">
+          <template slot-scope="{ row }" slot="name">
+            <strong>{{ row.name }}</strong>
+          </template>
+          <template slot-scope="{ row, index }" slot="action">
+            <Button type="primary" size="small">View</Button>
+            <Button type="error" size="small" >Delete</Button>
+          </template>
+        </Table>
+      </template>
+    </Modal>
   </div>
+
 </template>
 
 <script>
 export default {
   name: "IHeader",
   data() {
-    return {};
+    return {
+      modal1: false,
+      count1: 0,
+      count2: 0,
+      invitationList: "",
+      columns12: [
+        {
+          title: "Name",
+          slot: "name",
+          key:"name"
+        },
+        {
+          title: "Age",
+          key: "age"
+        },
+        {
+          title: "Address",
+          key: "address"
+        },
+        {
+          title: "Action",
+          slot: "action",
+          width: 150,
+          align: "center"
+        }
+      ],
+      data6: [
+        {
+          name: "John Brown",
+          age: 18,
+          address: "New York No. 1 Lake Park"
+        },
+        {
+          name: "Jim Green",
+          age: 24,
+          address: "London No. 1 Lake Park"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park"
+        },
+        {
+          name: "Jon Snow",
+          age: 26,
+          address: "Ottawa No. 2 Lake Park"
+        }
+      ]
+    };
+  },
+  created: function() {
+    console.log("123456", "this is header");
+    this.axios
+      .get("http://localhost:8090/invitations/received")
+      .then(res => {
+        if (res.data.code == 200) {
+          this.invitationList = res.data.data;
+          console.log(this.invitationList.length);
+          this.count1 += res.data.data.length;
+          console.log(this.count1);
+          
+        }
+      })
+      .catch(res => {
+        console.log(res);
+      });
+  },
+  methods: {
+    accept(project_id){
+      
+    }
   }
 };
 </script>

@@ -36,18 +36,21 @@ export default new Router({
         {
           name: 'projectdetail',
           path: '/projectdetail',
-          component: () => import('@/view/projectdetail')
+          component: () => import('@/view/projectdetail'),
+          children:[
+            {
+              name: 'files',
+              path:'/files',
+              component: () => import('@/view/files')
+            },
+          ]
         },
         {
           name: 'personnel',
           path: 'personnel',
           component: () => import('@/view/personnel')
         },
-        {
-          name: 'statistics',
-          path:'statistics',
-          component: () => import('@/view/statistics')
-        },
+
         {
           name: 'user',
           path: 'user',

@@ -1,12 +1,6 @@
 <template>
   <div class="project-content">
-    <div class="icon-list">
-      <Icon class="icon" type="ios-list-box-outline"/>
-      <div class="add-icon-wrap">
-        <Icon class="icon bg-icon" type="md-albums"/>
-        <Icon class="icon top-icon" @click="show = true" type="ios-add"/>
-      </div>
-    </div>
+
 
     <p class="project-title">我负责的项目</p>
 

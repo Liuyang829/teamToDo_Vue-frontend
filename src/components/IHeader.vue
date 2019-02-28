@@ -2,7 +2,7 @@
   <Row class-name="Row" type="flex" justify="space-between" align="middle" class="code-row-bg">
     <Col class-name="col-left" span="8">
       <div align="left">
-        <Input prefix="ios-search"  placeholder="Enter something..." style="width:50%"/>
+        <Input prefix="ios-search" placeholder="Enter something..." style="width:50%"/>
       </div>
     </Col>
     <Col class-name="col-center" span="8">
@@ -13,86 +13,166 @@
     <Col class-name="col-right" span="8">
       <div align="right">
         <a href="javascript:" class="btn" @click="calendar">日历</a>
-        <Icon type="ios-help-circle-outline"/>
-        <Icon type="ios-notifications-outline"/>
-        <Icon type="md-text"/>
-        <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+        <Badge dot :count="count1" class="demo-badge">
+          <Button
+            type="text"
+            shape="circle"
+            icon="md-notifications"
+            size="small"
+            @click="modal1 = true"
+          ></Button>
+        </Badge>&nbsp;
+        <Badge dot :count="count2">
+          <Button type="text" shape="circle" icon="md-text" size="small"></Button>
+        </Badge>
+        <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
       </div>
     </Col>
-  </Row>
-
-  <!-- <div style="width:33%">
-        <Poptip trigger="click" content="content" placement="bottom-start">
-          <a href="javascript:" class="header-left">
-            <Icon type="ios-list"/>
-            <p>有丶东西</p>
-          </a>
-          <div class="header-left-pop" slot="content">
-            <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-              <CellGroup>
-                <Cell title="创建企业" selected/>
-                <Cell title="test">
-                  <Badge class="header-badge" text="剩于14天" slot="extra"/>
-                </Cell>
-                <Cell title="贵州蓝关科技有限公司">
-                  <Badge class="header-badge" text="已到期" slot="extra"/>
-                </Cell>
-                <Cell title="个人项目"/>
-              </CellGroup>
+    <Modal v-model="modal1" title="项目邀请信息">
+      <li type="none">
+        <h5>具体信息：</h5>
+      </li>
+      <Scroll>
+        <li
+          class="invite-item"
+          v-for="(invitationitem,index) in invitationList"
+          data-index="index"
+          :key="index"
+          type="none"
+        >
+          <div>
+            <Card v-if="card[index]" long>
+              <ul>
+                <li>项目名称：{{invitationitem.project_name}}</li>
+                <Divider class="div"/>
+                <li>发起人：{{invitationitem.inviter}}</li>
+                <Divider class="div"/>
+                <div align="right">
+                  <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
+                  <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
+                </div>
+              </ul>
             </Card>
           </div>
-        </Poptip>
-        </div>
-    
+        </li>
+      </Scroll>
+    </Modal>
+  </Row>
 
-    
+   
 
-          <div >
-            <h1>TeamToDo</h1>
-          </div>
-     
 
-      
-        <div class="header-right">
-  <!-- <a href="javascript:" class="btn">工作台</a>-->
-  <!-- <a href="javascript:" class="btn" @click="calendar">日历</a>
-          <Icon type="ios-help-circle-outline"/>
-          <Icon type="ios-notifications-outline"/>
-          <Icon type="md-text"/>
-          <Poptip></Poptip>
-          <Poptip class="avatar-wrap" placement="bottom-end">
-            <Avatar
-              size="large"
-              class="avatar"
-              src="https://i.loli.net/2017/08/21/599a521472424.jpg"
-            />
-            <div class="poptip-content" slot="content">
-              <Card icon="ios-options" :padding="0" shadow style="width: 300px;">
-                <CellGroup>
-                  <Cell title="创建企业" selected/>
-                  <Cell title="个人项目"/>
-                  <Divider/>
-                  <Cell title="账号设置"/>
-                  <Cell title="偏好设置"/>
-                  <Cell title="切换至国际服务器" label="正在使用中国大陆服务器"/>
-                  <Divider/>
-                  <Cell title="退出"/>
-                </CellGroup>
-              </Card>
-            </div>
-          </Poptip>
-  </div>-->
 </template>
 
 <script>
+import qs from "qs";
 export default {
   name: "IHeader",
   data() {
     return {
-      userInfo: JSON.parse(localStorage.getItem("userInfo"))
+      modal1: false,
+      count1: 0,
+      count2: 0,
+      card: [],
+      invitationList: "",
+      timer: null,
     };
   },
+  created: function() {
+    // this.getFamilyBase_info();
+    clearInterval(this.timer);
+    this.timer = null;
+    this.setTimer();
+    console.log("123456", "this is header");
+    this.getList();
+  },
+  destroyed: function() {
+    clearInterval(this.timer);
+    this.timer = null;
+  },
   methods: {
+    getList() {
+      this.axios
+        .get("http://localhost:8090/invitations/received")
+        .then(res => {
+          if (res.data.code == 200) {
+            this.invitationList = res.data.data;
+            console.log(this.invitationList.length);
+            this.count1=0;
+            this.count1 += res.data.data.length;
+            console.log(this.count1);
+            this.card = [];
+            var i = 0;
+            for (i = 0; i < this.invitationList.length; i++) {
+              this.card.push(true);
+            }
+            // console.log(this.card);
+          }
+        })
+        .catch(res => {
+          console.log(res);
+        });
+    },
+    setTimer() {
+      if (this.timer == null) {
+        this.timer = setInterval(() => {
+          console.log("this is timer", "定时发生（10s)");
+          this.getList();
+          console.log("count1",this.count1);
+          
+        }, 10000);
+      }
+    },
+    //接受邀请
+    accept(invitation_id, index) {
+      console.log("this is index", index);
+
+      let data = {
+        invitation_id: parseInt(invitation_id)
+      };
+      this.axios
+        .post("http://localhost:8090/invitations/received", qs.stringify(data))
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            this.$Message.success("接受成功");
+            this.count1 -= 1;
+            console.log("count1:",this.count1);
+            
+            this.card[index] = false;
+          } else {
+            this.$Message.error("接受失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //拒绝邀请
+    refuse(invitation_id, index) {
+      // let data = {
+      //   invitation_id: parseInt(invitation_id)
+      // };
+      this.axios
+        .delete("http://localhost:8090/invitations/received", {
+          params: { invitation_id: invitation_id }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            this.$Message.success("拒绝成功");
+            this.count1 -= 1;
+            console.log("count1:",this.count1);
+            
+            this.card[index] = false;
+          } else {
+            this.$Message.error("拒绝失败");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     calendar() {
       this.$router.push("calendar");
     }

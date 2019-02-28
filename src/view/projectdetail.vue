@@ -3,21 +3,21 @@
     <Row>
       <Col span="8">
         <div>
-          <Button @click="this.$router.push()" type="text" ghost>
+          <Button @click="backhome()" type="text" ghost>
             <Icon type="md-arrow-back" size="30" color="black"/>
           </Button>
         </div>
       </Col>
-      <Col span="8" >
+      <Col span="8">
         <div class="projecttitle">
           <h2 align="center">{{projectInfo.name}}</h2>
         </div>
       </Col>
 
-      <Col span="8" >
+      <Col span="8">
         <div align="right">
-          <Button @click="Message = true" type="text" ghost>
-            <Icon type="ios-chatboxes" size="30" color="black"/>
+          <Button @click="toFiles()" type="text" ghost>
+            <Icon type="ios-folder" size="30" color="black"/>
           </Button>
           <Button @click="showDrawer()" type="text" ghost>
             <Icon type="md-settings" size="30" color="black"/>
@@ -26,150 +26,167 @@
       </Col>
     </Row>
 
-    <br>
-    <Row type="flex" justify="center" :gutter="40">
-      <Col span="8" id="waiting">
-        <ul>
-          <li class="task-classify-title">
-            <h3 justify="center">待分配</h3>
-          </li>
-          <br>
+    <Tabs>
+      <TabPane label="任务" icon="md-list-box">
+        <Row
+          style="margin:10px auto"
+          class-name="RowContent"
+          type="flex"
+          justify="center"
+          :gutter="40"
+          class="code-row-bg"
+        >
+          <Col span="8" id="waiting">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">待分配</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '待分配'"
-            :key="taskitem.name"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '待分配'"
+                :key="taskitem.name"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem disabled>待分配</DropdownItem>
+                        <DropdownItem>进行中</DropdownItem>
+                        <DropdownItem>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem disabled>待分配</DropdownItem>
-                    <DropdownItem>进行中</DropdownItem>
-                    <DropdownItem>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
 
-          <li>
-            <Button type="primary" @click="createtask = true" long>创建任务</Button>
-          </li>
-        </ul>
-      </Col>
+              <li>
+                <Button type="primary" @click="createtask = true" long>创建任务</Button>
+              </li>
+            </ul>
+          </Col>
 
-      <Col span="8" id="running">
-        <ul>
-          <li class="task-classify-title">
-            <h3 justify="center">进行中</h3>
-          </li>
-          <br>
+          <Col span="8" id="running">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">进行中</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '进行中'"
-            :key="taskitem.id"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '进行中'"
+                :key="taskitem.id"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem>待分配</DropdownItem>
+                        <DropdownItem disabled>进行中</DropdownItem>
+                        <DropdownItem>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>待分配</DropdownItem>
-                    <DropdownItem disabled>进行中</DropdownItem>
-                    <DropdownItem>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
-        </ul>
-      </Col>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
+            </ul>
+          </Col>
 
-      <Col span="8" id="finished">
-        <ul>
-          <li class="task-classify-title">
-            <h3 justify="center">已完成</h3>
-          </li>
-          <br>
+          <Col span="8" id="finished">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">已完成</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '已完成'"
-            :key="taskitem.name"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '已完成'"
+                :key="taskitem.name"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem>待分配</DropdownItem>
+                        <DropdownItem>进行中</DropdownItem>
+                        <DropdownItem disabled>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>待分配</DropdownItem>
-                    <DropdownItem>进行中</DropdownItem>
-                    <DropdownItem disabled>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
-        </ul>
-      </Col>
-    </Row>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
+            </ul>
+          </Col>
+        </Row>
+      </TabPane>
+      <TabPane label="文件" icon="md-folder">
+          <!-- <div style="width:100px;height:100px">
+          <input type="file" name="avatar" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event)" ref="avatarInput">
+          </div> -->
+        <!-- <button type="button" @click="edit">确认修改</button>  -->
+        <Table border :columns="fileColumns" :data="fileData" size="large"></Table>
+      </TabPane>
+    </Tabs>
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
       <div class="model-header" slot="header">
@@ -243,7 +260,15 @@
       </Form>
     </Modal>
 
-    <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
+    <Drawer
+      title="项目详情"
+      v-model="DrawerValue1"
+      width="400"
+      :styles="styles"
+      :transfer="false"
+      :inner="true"
+      :mask="false"
+    >
       <Divider orientation="center">项目详情</Divider>
       <Form :model="formItem" label-position="top">
         <FormItem label="项目名称">
@@ -341,7 +366,9 @@ export default {
       ProjectInfoDraw: false,
       Message: false,
       DrawerValue1: false,
-
+      uploadData:{
+        project_id:this.$route.query.projectId
+      },
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -364,6 +391,97 @@ export default {
         start_time: "",
         end_time: ""
       },
+      fileColumns: [
+        {
+          title: "文件名",
+          key: "name",
+          width: 600,
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.name)
+            ]);
+          }
+        },
+        {
+          title: "上传者",
+          key: "creator"
+        },
+        {
+          title: "上传时间",
+          key: "create_time"
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "6px"
+                  },
+                  on: {
+                    click: () => {
+                      this.download(params.index);
+                    }
+                  }
+                },
+                "下载"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index);
+                    }
+                  }
+                },
+                "删除"
+              )
+            ]);
+          }
+        }
+      ],
+
+      fileData: [
+        {
+          name: "John Brown",
+          age: 18,
+          address: "New York No. 1 Lake Park"
+        },
+        {
+          name: "Jim Green",
+          age: 24,
+          address: "London No. 1 Lake Park"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park"
+        },
+        {
+          name: "Jon Snow",
+          age: 26,
+          address: "Ottawa No. 2 Lake Park"
+        }
+      ],
 
       //shz
       createtask: false,
@@ -439,6 +557,9 @@ export default {
       this.formItem.start_time = this.projectInfo.start_time;
       this.formItem.end_time = this.projectInfo.end_time;
     },
+    backhome() {
+      this.$router.back(-1);
+    },
     inviteMember() {
       console.log(this.formInvite.emailInvite);
       let data = {
@@ -467,6 +588,7 @@ export default {
           console.log(error);
         });
     },
+
     changeLevel(level) {
       this.taskinfo.level = level;
       this.poptipShow = false;
@@ -532,6 +654,25 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    handleSuccess (res, file) {
+                console.log(res);
+                console.log(file.url)
+            },
+    handleError(res,file){
+      console.log(res);
+                console.log(file)
+    },
+    download(index) {
+      this.$Modal.info({
+        title: "User Info",
+        content: `Name：${this.data6[index].name}<br>Age：${
+          this.data6[index].age
+        }<br>Address：${this.data6[index].address}`
+      });
+    },
+    remove(index) {
+      this.data6.splice(index, 1);
     }
   }
 };
@@ -552,6 +693,9 @@ function getFormatDate(date) {
 </script>
 
 <style scoped lang="scss">
+.RowContent {
+  margin: 10px auto;
+}
 .task-classify-title {
   margin-left: 14px;
   font-size: 18px;

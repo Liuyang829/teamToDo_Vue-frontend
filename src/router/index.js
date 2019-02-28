@@ -29,6 +29,11 @@ export default new Router({
           component: () => import('@/view/project')
         },
         {
+          name: 'calendar',
+          path: '/calendar',
+          component: () => import('@/view/calendar')
+        },
+        {
           name: 'projectdetail',
           path: '/projectdetail',
           component: () => import('@/view/projectdetail')

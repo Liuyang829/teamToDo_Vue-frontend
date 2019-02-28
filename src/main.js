@@ -8,12 +8,14 @@ import Qs from 'qs'
 import 'iview/dist/styles/iview.css'
 import './assets/css/index.scss'
 import 'v-charts/lib/style.css'
+import fullCalendar from 'vue-fullcalendar'
+Vue.component('full-calendar', fullCalendar)
 Vue.use(iView)
-Vue.use(VueAxios,axios)
+Vue.use(VueAxios, axios)
 Vue.use(Qs)
 
 Vue.config.productionTip = false
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 
 /* eslint-disable no-new */
 new Vue({

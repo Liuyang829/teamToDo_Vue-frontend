@@ -65,9 +65,12 @@
 
     <Row>
       <Col span="4" offset="18">
-        <Progress :percent="50" status="active"/>
+        <Progress :percent="80" hide-info status="active"/>
       </Col>
-      <Col span="2" offset="10">123</Col>
+      <span>{{count}}</span>
+      <span>/</span>
+      <span>10</span>
+      <span>icon</span>
     </Row>
 
     <Modal :width="400" v-model="show" :footer-hide="true">
@@ -133,6 +136,7 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      count: 5,
       userInfo: JSON.parse(localStorage.getItem("userInfo")),
       show: false,
       levelStyle: {
@@ -180,7 +184,7 @@ export default {
 
   created: function() {
     console.log(this.userInfo);
-
+    // count = 5;
     this.axios
       .get("http://localhost:8090/projects/")
       .then(response => {
@@ -432,6 +436,10 @@ function getFormatDate(date) {
   align-items: center;
   font-size: 18px;
   text-align: center;
+}
+.span {
+  display: flex;
+  float: right;
 }
 </style>
 

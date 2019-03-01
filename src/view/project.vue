@@ -1,26 +1,40 @@
 <template>
   <div class="project-content">
-    <div class="icon-list">
-      <Icon class="icon" type="ios-list-box-outline"/>
-      <div class="add-icon-wrap">
-        <Icon class="icon bg-icon" type="md-albums"/>
-        <Icon class="icon top-icon" @click="show = true" type="ios-add"/>
-      </div>
-    </div>
-
     <p class="project-title">我负责的项目</p>
 
     <ul class="project-list">
       <li class="project-item" v-for="item in projects" :key="item.name">
-        <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
+        <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
+        <img
+          src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+        >
+
         <div class="project-mask" @click="toDetail(item.id)">
+          <div class="project-mask-level" v-if="item.level=='普通'" style="background-color:#2db7f5"></div>
+          <div class="project-mask-level" v-if="item.level=='紧急'" style="background-color:#ff9900"></div>
+          <div
+            class="project-mask-level"
+            v-if="item.level=='非常紧急'"
+            style="background-color:#ed4014"
+          ></div>
           <div class="project-mask-header">
-            <p class="project-mask-title">{{item.name}}</p>
+            <h3 class="project-mask-title">{{item.name}}</h3>
             <div>
-              <Tooltip content="打开设置设置" placement="top">
-                <Icon class="icon" type="md-create"/>
+              <Tooltip content="删除项目" placement="top">
+                <Button
+                  class="icon"
+                  @click="delProject(item.id)"
+                  type="error"
+                  shape="circle"
+                  icon="md-trash"
+                ></Button>
               </Tooltip>
             </div>
+          </div>
+          <div class="project-mask-body">
+            <p
+              style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+            >{{item.description}}</p>
           </div>
         </div>
       </li>
@@ -34,7 +48,8 @@
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
       <li class="project-item">
-        <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
+        <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
+        <img src="https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg">
         <div class="project-mask">
           <div class="project-mask-header">
             <p class="project-mask-title">产品进展</p>
@@ -120,6 +135,10 @@ export default {
     return {
       userInfo: JSON.parse(localStorage.getItem("userInfo")),
       show: false,
+      levelStyle: {
+        background: "red"
+      },
+      pressDel: false,
       poptipShow: false,
       formInline: {
         name: "",
@@ -174,12 +193,43 @@ export default {
 
   methods: {
     toDetail(projectId) {
-      this.$router.push({
-        path: "/projectdetail",
-        query: { projectId: projectId }
+      if (this.pressDel == false) {
+        this.$router.push({
+          path: "/projectdetail",
+          query: { projectId: projectId }
+        });
+      }
+    },
+    delProject(projectId) {
+      this.pressDel = true;
+      console.log("del", projectId);
+      this.$Modal.confirm({
+        title: "确定删除该项目？",
+        content: "<p>确定删除该项目？</p><p>确定删除该项目？</p>",
+        onOk: () => {
+          this.axios
+            .delete("http://localhost:8090/projects/", {
+              params: { project_id: projectId }
+            })
+            .then(response => {
+              console.log("response");
+              if (response.data.code == 200) {
+                this.$Message.success("项目删除成功");
+                this.reload();
+              } else {
+                this.$Message.error("项目删除失败");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          this.pressDel = false;
+        },
+        onCancel: () => {
+          this.pressDel = false;
+        }
       });
     },
-
     changeLevel(level) {
       this.formInline.level = level;
       this.poptipShow = false;
@@ -293,6 +343,7 @@ function getFormatDate(date) {
       img {
         width: 100%;
         height: 100%;
+        opacity: 0.8;
       }
       &.add-project {
         display: flex;
@@ -322,6 +373,14 @@ function getFormatDate(date) {
         &:hover .icon {
           opacity: 1;
         }
+        .project-mask-level {
+          width: 100%;
+          padding: 0px 0px;
+          height: 5px;
+          border-top-left-radius: 5px;
+          border-top-right-radius: 5px;
+        }
+
         .project-mask-header {
           width: 100%;
           padding: 10px 15px;
@@ -329,12 +388,21 @@ function getFormatDate(date) {
           justify-content: space-between;
           align-items: center;
           font-size: 18px;
-          color: #fff;
+          color: #000;
           .icon:hover {
             font-size: 19px;
             font-weight: bold;
             cursor: pointer;
           }
+        }
+        .project-mask-body {
+          width: 100%;
+          padding: 0px 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 15px;
+          color: rgb(0, 0, 0);
         }
       }
     }

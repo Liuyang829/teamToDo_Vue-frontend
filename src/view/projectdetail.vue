@@ -1,168 +1,192 @@
 <template>
   <div>
     <Row>
-      <Col span="6" offset="8">
+      <Col span="8">
+        <div>
+          <Button @click="backhome()" type="text" ghost>
+            <Icon type="md-arrow-back" size="30" color="black"/>
+          </Button>
+        </div>
+      </Col>
+      <Col span="8">
         <div class="projecttitle">
-          <p align="center">{{projectInfo.name}}</p>
+          <h2 align="center">{{projectInfo.name}}</h2>
         </div>
       </Col>
 
-      <Col span="6" offset="4">
+      <Col span="8">
         <div align="right">
-          <Button @click="showDrawer()" type="text" ghost>
-            <Icon type="md-options" size="30" color="black"/>
+          <Button @click="toFiles()" type="text" ghost>
+            <Icon type="ios-folder" size="30" color="black"/>
           </Button>
-          <Button @click="Message = true" type="text" ghost>
-            <Icon type="ios-chatboxes" size="30" color="black"/>
+          <Button @click="showDrawer()" type="text" ghost>
+            <Icon type="md-settings" size="30" color="black"/>
           </Button>
         </div>
       </Col>
     </Row>
 
-    <br>
-    <Row type="flex" justify="center" :gutter="40">
-      <Col span="8" id="waiting">
-        <ul>
-          <li class="task-classify-title">
-            <p justify="center">待分配</p>
-          </li>
-          <br>
+    <Tabs>
+      <TabPane label="任务" icon="md-list-box">
+        <Row
+          style="margin:10px auto"
+          class-name="RowContent"
+          type="flex"
+          justify="center"
+          :gutter="40"
+          class="code-row-bg"
+        >
+          <Col span="8" id="waiting">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">待分配</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '待分配'"
-            :key="taskitem.name"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '待分配'"
+                :key="taskitem.name"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem disabled>待分配</DropdownItem>
+                        <DropdownItem>进行中</DropdownItem>
+                        <DropdownItem>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem disabled>待分配</DropdownItem>
-                    <DropdownItem>进行中</DropdownItem>
-                    <DropdownItem>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
 
-          <li>
-            <Button type="primary" @click="createtask = true" long>创建任务</Button>
-          </li>
-        </ul>
-      </Col>
+              <li>
+                <Button type="primary" @click="createtask = true" long>创建任务</Button>
+              </li>
+            </ul>
+          </Col>
 
-      <Col span="8" id="running">
-        <ul>
-          <li class="task-classify-title">
-            <p justify="center">进行中</p>
-          </li>
-          <br>
+          <Col span="8" id="running">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">进行中</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '进行中'"
-            :key="taskitem.id"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '进行中'"
+                :key="taskitem.id"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem>待分配</DropdownItem>
+                        <DropdownItem disabled>进行中</DropdownItem>
+                        <DropdownItem>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>待分配</DropdownItem>
-                    <DropdownItem disabled>进行中</DropdownItem>
-                    <DropdownItem>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
-        </ul>
-      </Col>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
+            </ul>
+          </Col>
 
-      <Col span="8" id="finished">
-        <ul>
-          <li class="task-classify-title">
-            <p justify="center">已完成</p>
-          </li>
-          <br>
+          <Col span="8" id="finished">
+            <ul>
+              <li class="task-classify-title">
+                <h3 justify="center">已完成</h3>
+              </li>
+              <br>
 
-          <li
-            class="task-item"
-            v-for="taskitem in tasklist"
-            v-if="taskitem.state == '已完成'"
-            :key="taskitem.name"
-          >
-            <Card long>
-              <p slot="title">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="ios-arrow-down"></Icon>
-                    {{taskitem.name}}
+              <li
+                class="task-item"
+                v-for="taskitem in tasklist"
+                v-if="taskitem.state == '已完成'"
+                :key="taskitem.name"
+              >
+                <Card long>
+                  <p slot="title">
+                    <Dropdown>
+                      <a href="javascript:void(0)">
+                        <Icon type="ios-arrow-down"></Icon>
+                        {{taskitem.name}}
+                      </a>
+                      <DropdownMenu slot="list">
+                        <DropdownItem>待分配</DropdownItem>
+                        <DropdownItem>进行中</DropdownItem>
+                        <DropdownItem disabled>已完成</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </p>
+                  <a slot="extra">
+                    <Button @click="deletetask(taskitem.id)" type="text">
+                      <Icon type="ios-trash" size="25"/>
+                    </Button>
+                    <Button @click="changetask = true" type="text">
+                      <Icon type="ios-clipboard" size="25"/>
+                    </Button>
                   </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>待分配</DropdownItem>
-                    <DropdownItem>进行中</DropdownItem>
-                    <DropdownItem disabled>已完成</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </p>
-              <a slot="extra">
-                <Button @click="deletetask(taskitem.id)" type="text">
-                  <Icon type="ios-trash" size="25"/>
-                </Button>
-                <Button @click="changetask = true" type="text">
-                  <Icon type="ios-clipboard" size="25"/>
-                </Button>
-              </a>
-              <ul>
-                <li>负责人：{{taskitem.owner_name}}</li>
-                <Divider class="div"/>
-                <li>任务简介：{{taskitem.description}}</li>
-              </ul>
-            </Card>
-            <br>
-          </li>
-        </ul>
-      </Col>
-    </Row>
+                  <ul>
+                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <Divider class="div"/>
+                    <li>任务简介：{{taskitem.description}}</li>
+                  </ul>
+                </Card>
+                <br>
+              </li>
+            </ul>
+          </Col>
+        </Row>
+      </TabPane>
+      <TabPane label="文件" icon="md-folder">
+          <!-- <div style="width:100px;height:100px">
+          <input type="file" name="avatar" accept="image/gif,image/jpeg,image/jpg,image/png" style="display:none" @change="changeImage($event)" ref="avatarInput">
+          </div> -->
+        <!-- <button type="button" @click="edit">确认修改</button>  -->
+        <Table border :columns="fileColumns" :data="fileData" size="large"></Table>
+      </TabPane>
+    </Tabs>
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
       <div class="model-header" slot="header">
@@ -222,7 +246,11 @@
 
         <FormItem prop="owner_id">
           <Select v-model="taskinfo.member" placeholder="负责人(必选)">
-            <Option v-for="memberitem in projectmembers" :key="memberitem.id" :value="memberitem.id">{{memberitem.name}}</Option>
+            <Option
+              v-for="memberitem in projectmembers"
+              :key="memberitem.id"
+              :value="memberitem.id"
+            >{{memberitem.name}}</Option>
           </Select>
         </FormItem>
 
@@ -232,68 +260,15 @@
       </Form>
     </Modal>
 
-    <Drawer title="项目详情" v-model="ProjectInfoDraw" width="500" :styles="styles" :transfer="false">
-      <Form :model="formItem">
-        <FormItem label="Input">
-          <Input v-model="formItem.input" placeholder="Enter something..."></Input>
-        </FormItem>
-        <FormItem label="Select">
-          <Select v-model="formItem.select">
-            <Option value="beijing">New York</Option>
-            <Option value="shanghai">London</Option>
-            <Option value="shenzhen">Sydney</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="DatePicker">
-          <Row>
-            <Col span="11">
-              <DatePicker type="date" placeholder="Select date" v-model="formItem.date"></DatePicker>
-            </Col>
-            <Col span="2" style="text-align: center">-</Col>
-            <Col span="11">
-              <TimePicker type="time" placeholder="Select time" v-model="formItem.time"></TimePicker>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="Radio">
-          <RadioGroup v-model="formItem.radio">
-            <Radio label="male">Male</Radio>
-            <Radio label="female">Female</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="Checkbox">
-          <CheckboxGroup v-model="formItem.checkbox">
-            <Checkbox label="Eat"></Checkbox>
-            <Checkbox label="Sleep"></Checkbox>
-            <Checkbox label="Run"></Checkbox>
-            <Checkbox label="Movie"></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="Switch">
-          <i-switch v-model="formItem.switch" size="large">
-            <span slot="open">On</span>
-            <span slot="close">Off</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="Slider">
-          <Slider v-model="formItem.slider" range></Slider>
-        </FormItem>
-        <FormItem label="Text">
-          <Input
-            v-model="formItem.textarea"
-            type="textarea"
-            :autosize="{minRows: 2,maxRows: 5}"
-            placeholder="Enter something..."
-          ></Input>
-        </FormItem>
-        <FormItem>
-          <Button type="primary">Submit</Button>
-          <Button style="margin-left: 8px">Cancel</Button>
-        </FormItem>
-      </Form>
-    </Drawer>
-
-    <Drawer title="项目详情" v-model="DrawerValue1" width="500" :styles="styles" :transfer="false">
+    <Drawer
+      title="项目详情"
+      v-model="DrawerValue1"
+      width="400"
+      :styles="styles"
+      :transfer="false"
+      :inner="true"
+      :mask="false"
+    >
       <Divider orientation="center">项目详情</Divider>
       <Form :model="formItem" label-position="top">
         <FormItem label="项目名称">
@@ -340,7 +315,7 @@
       <Divider orientation="center">项目成员</Divider>
       <ul>
         <li v-for="member in projectmembers" :key="member">
-          <Card long>
+          <Card long v-model="show">
             <Row type="flex" justify="center" align="middle">
               <Col span="12">
                 <div>
@@ -374,14 +349,13 @@
         </FormItem>
       </Form>
     </Drawer>
-
   </div>
 </template>
 
 <script>
 import qs from "qs";
 export default {
-  inject:['reload'],
+  inject: ["reload"],
   data() {
     return {
       //wsg
@@ -392,7 +366,9 @@ export default {
       ProjectInfoDraw: false,
       Message: false,
       DrawerValue1: false,
-      
+      uploadData:{
+        project_id:this.$route.query.projectId
+      },
       styles: {
         height: "calc(100% - 55px)",
         overflow: "auto",
@@ -415,6 +391,97 @@ export default {
         start_time: "",
         end_time: ""
       },
+      fileColumns: [
+        {
+          title: "文件名",
+          key: "name",
+          width: 600,
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.name)
+            ]);
+          }
+        },
+        {
+          title: "上传者",
+          key: "creator"
+        },
+        {
+          title: "上传时间",
+          key: "create_time"
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "6px"
+                  },
+                  on: {
+                    click: () => {
+                      this.download(params.index);
+                    }
+                  }
+                },
+                "下载"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.remove(params.index);
+                    }
+                  }
+                },
+                "删除"
+              )
+            ]);
+          }
+        }
+      ],
+
+      fileData: [
+        {
+          name: "John Brown",
+          age: 18,
+          address: "New York No. 1 Lake Park"
+        },
+        {
+          name: "Jim Green",
+          age: 24,
+          address: "London No. 1 Lake Park"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park"
+        },
+        {
+          name: "Jon Snow",
+          age: 26,
+          address: "Ottawa No. 2 Lake Park"
+        }
+      ],
 
       //shz
       createtask: false,
@@ -474,12 +541,11 @@ export default {
           console.log(this.projectmembers);
         } else {
           this.$Message.error("权限错误");
-        } 
+        }
       })
       .catch(function(error) {
         console.log(error);
       });
-
   },
 
   methods: {
@@ -491,9 +557,38 @@ export default {
       this.formItem.start_time = this.projectInfo.start_time;
       this.formItem.end_time = this.projectInfo.end_time;
     },
+    backhome() {
+      this.$router.back(-1);
+    },
     inviteMember() {
       console.log(this.formInvite.emailInvite);
+      let data = {
+        project_id: this.projectId,
+        email: this.formInvite.emailInvite
+      };
+
+      this.axios
+        .post("http://localhost:8090/invitations", qs.stringify(data))
+        .then(response => {
+          console.log(response);
+          if (response.data.code == 200) {
+            console.log(response);
+            this.$Modal.success({
+              title: "邀请成功",
+              content: "等待对方确认"
+            });
+          } else {
+            this.$Modal.error({
+              title: "邀请失败",
+              content: response.data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
+
     changeLevel(level) {
       this.taskinfo.level = level;
       this.poptipShow = false;
@@ -503,7 +598,7 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           // 建数据包
-          
+
           let data = {
             project_id: this.projectId,
             name: this.taskinfo.name,
@@ -512,13 +607,13 @@ export default {
             state: "待分配",
             start_time: getFormatDate(new Date(this.taskinfo.start_time)),
             end_time: getFormatDate(new Date(this.taskinfo.end_time)),
-            owner_id: this.taskinfo.member,
+            owner_id: this.taskinfo.member
           };
           console.log(data);
           // POST
           this.axios
             .post("http://localhost:8090/projects/tasks/", qs.stringify(data))
-            .then((response) => {
+            .then(response => {
               console.log(response);
               if (response.data.code == 200) {
                 console.log(111);
@@ -528,7 +623,8 @@ export default {
               } else {
                 this.$Message.error("任务创建失败");
               }
-            }).catch(error => {
+            })
+            .catch(error => {
               console.log(error);
             });
         } else {
@@ -538,15 +634,15 @@ export default {
     },
 
     deletetask(taskid) {
-      console.log("delete task:",taskid);
+      console.log("delete task:", taskid);
       let data = {
         project_id: this.projectId,
-        task_id: String(taskid),
+        task_id: String(taskid)
       };
       console.log(data);
       this.axios
-        .delete("http://localhost:8090/projects/tasks/", {params:data})
-        .then((response) => {
+        .delete("http://localhost:8090/projects/tasks/", { params: data })
+        .then(response => {
           console.log("response");
           if (response.data.code == 200) {
             this.$Message.success("任务删除成功");
@@ -554,10 +650,30 @@ export default {
           } else {
             this.$Message.error("任务删除失败");
           }
-        }).catch(error => {
+        })
+        .catch(error => {
           console.log(error);
         });
     },
+    handleSuccess (res, file) {
+                console.log(res);
+                console.log(file.url)
+            },
+    handleError(res,file){
+      console.log(res);
+                console.log(file)
+    },
+    download(index) {
+      this.$Modal.info({
+        title: "User Info",
+        content: `Name：${this.data6[index].name}<br>Age：${
+          this.data6[index].age
+        }<br>Address：${this.data6[index].address}`
+      });
+    },
+    remove(index) {
+      this.data6.splice(index, 1);
+    }
   }
 };
 function getFormatDate(date) {
@@ -577,6 +693,9 @@ function getFormatDate(date) {
 </script>
 
 <style scoped lang="scss">
+.RowContent {
+  margin: 10px auto;
+}
 .task-classify-title {
   margin-left: 14px;
   font-size: 18px;

@@ -11,7 +11,6 @@
     <p class="project-title">我负责的项目</p>
 
     <ul class="project-list">
-
       <li class="project-item" v-for="item in projects" :key="item.name">
         <img src="https://mailimg.teambition.com/logos/cover-demo.jpg">
         <div class="project-mask" @click="toDetail(item.id)">
@@ -30,7 +29,6 @@
         <Icon class="add-icon" @click="show = true" type="ios-add-circle"/>
         <p>创建新项目</p>
       </li>
-
     </ul>
 
     <p class="project-title">我参与的项目</p>
@@ -49,6 +47,14 @@
         </div>
       </li>
     </ul>
+
+    <Row>
+      <Col span="4" offset="18">
+        <Progress :percent="50" status="active"/>
+      </Col>
+      <Col span="2" offset="10">123</Col>
+    </Row>
+
     <Modal :width="400" v-model="show" :footer-hide="true">
       <div class="model-header" slot="header">
         <Icon type="ios-arrow-back"/>
@@ -101,7 +107,6 @@
         <FormItem>
           <Button long type="primary" @click="handleSubmit('formInline')">完成并创建</Button>
         </FormItem>
-        
       </Form>
     </Modal>
   </div>
@@ -110,10 +115,10 @@
 <script>
 import qs from "qs";
 export default {
-  inject:['reload'],
+  inject: ["reload"],
   data() {
     return {
-      userInfo: JSON.parse(localStorage.getItem('userInfo')),
+      userInfo: JSON.parse(localStorage.getItem("userInfo")),
       show: false,
       poptipShow: false,
       formInline: {
@@ -139,7 +144,7 @@ export default {
           }
         ]
       },
-      projects: "",
+      projects: ""
       // options3: {
       //       disabledDate (date) {
       //           return date && date.valueOf() < Date.now() - 86400000;
@@ -155,13 +160,12 @@ export default {
   },
 
   created: function() {
-
     console.log(this.userInfo);
 
     this.axios
       .get("http://localhost:8090/projects/")
-      .then((response) => {
-        this.projects=response.data.data;
+      .then(response => {
+        this.projects = response.data.data;
       })
       .catch(function(error) {
         console.log(error);
@@ -169,9 +173,11 @@ export default {
   },
 
   methods: {
-
-    toDetail(projectId){
-      this.$router.push({path:"/projectdetail",query:{projectId:projectId}});
+    toDetail(projectId) {
+      this.$router.push({
+        path: "/projectdetail",
+        query: { projectId: projectId }
+      });
     },
 
     changeLevel(level) {

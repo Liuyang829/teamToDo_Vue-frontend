@@ -16,9 +16,6 @@
 
       <Col span="8">
         <div align="right">
-          <Button @click="toFiles()" type="text" ghost>
-            <Icon type="ios-folder" size="30" color="black"/>
-          </Button>
           <Button @click="showDrawer()" type="text" ghost>
             <Icon type="md-settings" size="30" color="black"/>
           </Button>
@@ -26,8 +23,8 @@
       </Col>
     </Row>
 
-    <Tabs>
-      <TabPane label="任务" icon="md-list-box">
+    <Tabs :value="TabShow" @on-click="clickTab">
+      <TabPane name="tasks" label="任务" icon="md-list-box">
         <Row
           style="margin:10px auto"
           class-name="RowContent"
@@ -179,10 +176,47 @@
           </Col>
         </Row>
       </TabPane>
-      <TabPane label="文件" icon="md-folder">
+
+      <TabPane name="files" label="文件" icon="md-folder">
+        <div style="padding: 0px 0">
+        <Upload
+          multiple
+          type="drag"
+          action="http://localhost:8090/files/"
+          :on-success="uploadSuccess"
+          name="file"
+          :data="uploadData"
+          :with-credentials="true"
+        >
+        
+          <div style="padding: 20px 0">
+            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+            <h3>点击或将文件拖拽至此区域上传</h3>
+          </div>
+        </Upload>
+        </div>
+        <div style="padding: 20px 0" align="right">
+        <Button type="primary" shape="circle" icon="md-trash" @click="recycleBin()" size="large">文件回收站</Button>
+        </div>
         <Table border :columns="fileColumns" :data="fileData" size="large"></Table>
       </TabPane>
+        
     </Tabs>
+
+    <Modal v-model="recycleBinShow" width="50%">
+        <div slot="header" style="color:#f60;text-align:center;height:100;font-size:30px" >
+            <Icon type="md-trash"></Icon>
+            <span >文件回收站</span>
+        </div>
+        <div style="text-align:center">
+            <Table height="400" border :columns="fileColumnsBin" :data="fileDataBin" size="large"></Table>
+        </div>
+        <div slot="footer" width="30%">
+            <Button type="error" size="large" long :loading="modal_loading" @click="recycleBinShow=false">退出</Button>
+        </div>
+    </Modal>
+
+
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
       <div class="model-header" slot="header">
@@ -359,7 +393,7 @@
       :mask="false"
     >
       <Divider orientation="center">项目详情</Divider>
-      <Form :model="formItem" label-position="top">
+      <Form ref="formUpProject" :model="formItem" label-position="top">
         <FormItem label="项目名称">
           <Input v-model="formItem.projectName" placeholder="输入项目名称"></Input>
         </FormItem>
@@ -395,7 +429,7 @@
 
         <FormItem>
           <div align="center">
-            <Button type="primary">修改</Button>
+            <Button type="primary" @click="upProject('formUpProject')">修改</Button>
             <Button style="margin-left: 8px" @click="DrawerValue1=false">取消</Button>
           </div>
         </FormItem>
@@ -404,7 +438,7 @@
       <Divider orientation="center">项目成员</Divider>
       <ul>
         <li v-for="member in projectmembers" :key="member">
-          <Card long v-model="show">
+          <Card long>
             <Row type="flex" justify="center" align="middle">
               <Col span="12">
                 <div>
@@ -455,8 +489,10 @@ export default {
       ProjectInfoDraw: false,
       Message: false,
       DrawerValue1: false,
-      uploadData:{
-        project_id:this.$route.query.projectId
+      TabShow: "tasks",
+      recycleBinShow:false,
+      uploadData: {
+        project_id: this.$route.query.projectId
       },
       styles: {
         height: "calc(100% - 55px)",
@@ -483,7 +519,7 @@ export default {
       fileColumns: [
         {
           title: "文件名",
-          key: "name",
+          key: "original_name",
           width: 600,
           render: (h, params) => {
             return h("div", [
@@ -492,13 +528,13 @@ export default {
                   type: "person"
                 }
               }),
-              h("strong", params.row.name)
+              h("strong", params.row.original_name)
             ]);
           }
         },
         {
           title: "上传者",
-          key: "creator"
+          key: "creator_name"
         },
         {
           title: "上传时间",
@@ -523,7 +559,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.download(params.index);
+                      this.download(params.row.id);
                     }
                   }
                 },
@@ -538,7 +574,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.remove(params.index);
+                      this.remove(params.row.id);
                     }
                   }
                 },
@@ -549,28 +585,78 @@ export default {
         }
       ],
 
-      fileData: [
+      fileData: [],
+
+      fileColumnsBin: [
         {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park"
+          title: "文件名",
+          key: "original_name",
+          width: 330,
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.original_name)
+            ]);
+          }
         },
         {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park"
+          title: "上传者",
+          key: "creator_name"
         },
         {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park"
+          title: "上传时间",
+          key: "create_time"
         },
         {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park"
+          title: "操作",
+          key: "action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "6px"
+                  },
+                  on: {
+                    click: () => {
+                      this.recycle(params.row.id);
+                    }
+                  }
+                },
+                "恢复"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.delFormBin(params.row.id);
+                    }
+                  }
+                },
+                "彻底删除"
+              )
+            ]);
+          }
         }
       ],
+
+      fileDataBin:[],
 
       //shz
       createtask: false,
@@ -650,6 +736,152 @@ export default {
       this.formItem.start_time = this.projectInfo.start_time;
       this.formItem.end_time = this.projectInfo.end_time;
     },
+
+    getFiles() {
+      this.fileData=[];
+      this.fileDataBin=[];
+      this.TabShow = "files";
+      console.log("getFiles...", name);
+      this.axios
+        .get("http://localhost:8090/files/", {
+          params: { project_id: this.projectId }
+        })
+        .then(res => {
+          if (res.data.code == 200) {
+            for (var i = 0; i < res.data.data.length; i++) {
+              if (res.data.data[i].isDeleted == false) {
+                this.fileData.push(res.data.data[i]);
+              }else{
+                this.fileDataBin.push(res.data.data[i]);
+              }
+            }
+          } else {
+            console.log("获取文件失败");
+          }
+        });
+    },
+
+    clickTab(name) {
+      if (name == "files") {
+        this.getFiles();
+      } else {
+        this.TabShow = "tasks";
+        this.reload();
+      }
+    },
+
+    uploadSuccess() {
+      this.$Modal.success({
+        title: "上传成功",
+        content: "请点击文件图标进行刷新。"
+      });
+      this.getFiles();
+    },
+
+    download(fileId) {
+      window.location.href =
+        "http://localhost:8090/files/download?" +
+        "project_id=" +
+        this.projectId +
+        "&file_id=" +
+        fileId;
+    },
+
+    remove(fileId) {
+      this.$Modal.confirm({
+        title: "确定删除该文件？",
+        content: "删除后可在回收站恢复。",
+        onOk: () => {
+          this.axios
+            .delete("http://localhost:8090/files/", {
+              params: { project_id: this.projectId, file_id: fileId }
+            })
+            .then(response => {
+              if (response.data.code == 200) {
+                this.$Message.success("文件删除成功");
+                this.getFiles();
+              } else {
+                this.$Message.error("文件删除失败");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        },
+        onCancel: () => {}
+      });
+    },
+
+    recycleBin(){
+      this.recycleBinShow=true;
+      // this.getFiles();
+    },
+
+    recycle(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.post("http://localhost:8090/files/bin/",qs.stringify(data))
+        .then(res => {
+          this.$Modal.success({
+            title: "恢复成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+    },
+
+    delFormBin(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.delete("http://localhost:8090/files/bin?"+qs.stringify(data))
+        .then(res => {
+          console.log(res);
+          this.$Modal.success({
+            title: "彻底删除成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+    },
+
+    upProject(name) {
+      let data = {
+        project_id: this.projectId,
+        name: this.formItem.projectName,
+        description: this.formItem.projectDesc,
+        level: this.formItem.level,
+        state: "w",
+        start_time: getFormatDate(new Date(this.formItem.start_time)),
+        end_time: getFormatDate(new Date(this.formItem.end_time))
+      };
+      console.log(data);
+      this.axios
+        .put("http://localhost:8090/projects/upProject?" + qs.stringify(data))
+        .then(res => {
+          if (res.data.code == 200) {
+            console.log(res);
+            this.$Message.success("修改成功");
+            this.reload();
+          } else {
+            this.$Modal.error({
+              title: "修改失败",
+              content: "抱歉，您无权修改该项目！"
+            });
+          }
+        })
+        .catch(res => {
+          console.log(res);
+        });
+    },
+
     backhome() {
       this.$router.back(-1);
     },
@@ -863,25 +1095,15 @@ export default {
         }
       });      
     },
+
     handleSuccess (res, file) {
-                console.log(res);
-                console.log(file.url)
-            },
+      console.log(res);
+      console.log(file.url)
+    },
     handleError(res,file){
       console.log(res);
-                console.log(file)
+      console.log(file.url);
     },
-    download(index) {
-      this.$Modal.info({
-        title: "User Info",
-        content: `Name：${this.data6[index].name}<br>Age：${
-          this.data6[index].age
-        }<br>Address：${this.data6[index].address}`
-      });
-    },
-    remove(index) {
-      this.data6.splice(index, 1);
-    }
   }
 };
 function getFormatDate(date) {

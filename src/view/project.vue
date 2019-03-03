@@ -3,10 +3,9 @@
     <p class="project-title">我负责的项目</p>
 
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name">
-        <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
+      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
-          src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+          :src="imgSrc[imgRandomIndex()]"
         >
 
         <div class="project-mask" @click="toDetail(item.id)">
@@ -47,17 +46,27 @@
 
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
-      <li class="project-item">
+      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='member'" >
         <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
-        <img src="https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg">
-        <div class="project-mask">
+        <img
+          :src="imgSrc[imgRandomIndex()]"
+        >
+
+        <div class="project-mask" @click="toDetail(item.id)">
+          <div class="project-mask-level" v-if="item.level=='普通'" style="background-color:#2db7f5"></div>
+          <div class="project-mask-level" v-if="item.level=='紧急'" style="background-color:#ff9900"></div>
+          <div
+            class="project-mask-level"
+            v-if="item.level=='非常紧急'"
+            style="background-color:#ed4014"
+          ></div>
           <div class="project-mask-header">
-            <p class="project-mask-title">产品进展</p>
-            <div>
-              <Tooltip content="打开设置设置" placement="top">
-                <Icon class="icon" type="md-create"/>
-              </Tooltip>
-            </div>
+            <h3 class="project-mask-title">{{item.name}}</h3>
+          </div>
+          <div class="project-mask-body">
+            <p
+              style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+            >{{item.description}}</p>
           </div>
         </div>
       </li>
@@ -167,7 +176,14 @@ export default {
           }
         ]
       },
-      projects: ""
+      projects: "",
+
+      imgSrc: [
+        "https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/1068989/pexels-photo-1068989.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+      ]
       // options3: {
       //       disabledDate (date) {
       //           return date && date.valueOf() < Date.now() - 86400000;
@@ -196,6 +212,9 @@ export default {
   },
 
   methods: {
+    imgRandomIndex(){
+      return Math.floor((Math.random()*4)); 
+    },
     toDetail(projectId) {
       if (this.pressDel == false) {
         this.$router.push({
@@ -206,7 +225,6 @@ export default {
     },
     delProject(projectId) {
       this.pressDel = true;
-      console.log("del", projectId);
       this.$Modal.confirm({
         title: "确定删除该项目？",
         content: "<p>确定删除该项目？</p><p>确定删除该项目？</p>",
@@ -348,6 +366,7 @@ function getFormatDate(date) {
         width: 100%;
         height: 100%;
         opacity: 0.8;
+        -webkit-filter: blur(0.8px); 
       }
       &.add-project {
         display: flex;

@@ -5,7 +5,7 @@
     <ul class="project-list">
       <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
-          src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+          :src="imgSrc[imgRandomIndex()]"
         >
 
         <div class="project-mask" @click="toDetail(item.id)">
@@ -49,7 +49,7 @@
       <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='member'" >
         <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
         <img
-          src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+          :src="imgSrc[imgRandomIndex()]"
         >
 
         <div class="project-mask" @click="toDetail(item.id)">
@@ -176,7 +176,14 @@ export default {
           }
         ]
       },
-      projects: ""
+      projects: "",
+
+      imgSrc: [
+        "https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/1068989/pexels-photo-1068989.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+      ]
       // options3: {
       //       disabledDate (date) {
       //           return date && date.valueOf() < Date.now() - 86400000;
@@ -205,6 +212,9 @@ export default {
   },
 
   methods: {
+    imgRandomIndex(){
+      return Math.floor((Math.random()*4)); 
+    },
     toDetail(projectId) {
       if (this.pressDel == false) {
         this.$router.push({
@@ -356,6 +366,7 @@ function getFormatDate(date) {
         width: 100%;
         height: 100%;
         opacity: 0.8;
+        -webkit-filter: blur(0.8px); 
       }
       &.add-project {
         display: flex;

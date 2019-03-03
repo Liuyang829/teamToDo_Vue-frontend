@@ -48,15 +48,15 @@
               >
                 <Card long>
                   <p slot="title">
-                    <Dropdown>
+                    <Dropdown trigger="click" @on-click="changeState($event,taskitem.id)">
                       <a href="javascript:void(0)">
                         <Icon type="ios-arrow-down"></Icon>
                         {{taskitem.name}}
                       </a>
                       <DropdownMenu slot="list">
-                        <DropdownItem disabled>待分配</DropdownItem>
-                        <DropdownItem>进行中</DropdownItem>
-                        <DropdownItem>已完成</DropdownItem>
+                        <DropdownItem name="待分配" disabled >待分配</DropdownItem>
+                        <DropdownItem name="进行中" >进行中</DropdownItem>
+                        <DropdownItem name="已完成" disabled >已完成</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </p>
@@ -64,12 +64,12 @@
                     <Button @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="changetask = true" type="text">
+                    <Button @click="changetask(taskitem.id)" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
                   <ul>
-                    <li>负责人：{{taskitem.owner_name}}</li>
+                    <li>负责人：(待分配)</li>
                     <Divider class="div"/>
                     <li>任务简介：{{taskitem.description}}</li>
                   </ul>
@@ -98,15 +98,15 @@
               >
                 <Card long>
                   <p slot="title">
-                    <Dropdown>
+                    <Dropdown trigger="click" @on-click="changeState($event,taskitem.id)">
                       <a href="javascript:void(0)">
                         <Icon type="ios-arrow-down"></Icon>
                         {{taskitem.name}}
                       </a>
                       <DropdownMenu slot="list">
-                        <DropdownItem>待分配</DropdownItem>
-                        <DropdownItem disabled>进行中</DropdownItem>
-                        <DropdownItem>已完成</DropdownItem>
+                        <DropdownItem name="待分配" >待分配</DropdownItem>
+                        <DropdownItem name="进行中" disabled >进行中</DropdownItem>
+                        <DropdownItem name="已完成" >已完成</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </p>
@@ -114,7 +114,7 @@
                     <Button @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="changetask = true" type="text">
+                    <Button @click="changetask(taskitem.id)" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
@@ -144,15 +144,15 @@
               >
                 <Card long>
                   <p slot="title">
-                    <Dropdown>
+                    <Dropdown trigger="click" @on-click="changeState($event,taskitem.id)">
                       <a href="javascript:void(0)">
                         <Icon type="ios-arrow-down"></Icon>
                         {{taskitem.name}}
                       </a>
                       <DropdownMenu slot="list">
-                        <DropdownItem>待分配</DropdownItem>
-                        <DropdownItem>进行中</DropdownItem>
-                        <DropdownItem disabled>已完成</DropdownItem>
+                        <DropdownItem name="待分配" >待分配</DropdownItem>
+                        <DropdownItem name="进行中" >进行中</DropdownItem>
+                        <DropdownItem name="已完成" disabled >已完成</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </p>
@@ -160,7 +160,7 @@
                     <Button @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="changetask = true" type="text">
+                    <Button @click="createtask = true" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
@@ -178,6 +178,7 @@
       </TabPane>
 
       <TabPane name="files" label="文件" icon="md-folder">
+        <div style="padding: 0px 0">
         <Upload
           multiple
           type="drag"
@@ -187,25 +188,48 @@
           :data="uploadData"
           :with-credentials="true"
         >
+        
           <div style="padding: 20px 0">
             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
             <h3>点击或将文件拖拽至此区域上传</h3>
           </div>
         </Upload>
-
+        </div>
+        <div style="padding: 20px 0" align="right">
+        <Button type="primary" shape="circle" icon="md-trash" @click="recycleBin()" size="large">文件回收站</Button>
+        </div>
         <Table border :columns="fileColumns" :data="fileData" size="large"></Table>
       </TabPane>
+        
     </Tabs>
+
+    <Modal v-model="recycleBinShow" width="50%">
+        <div slot="header" style="color:#f60;text-align:center;height:100;font-size:30px" >
+            <Icon type="md-trash"></Icon>
+            <span >文件回收站</span>
+        </div>
+        <div style="text-align:center">
+            <Table height="400" border :columns="fileColumnsBin" :data="fileDataBin" size="large"></Table>
+        </div>
+        <div slot="footer" width="30%">
+            <Button type="error" size="large" long :loading="modal_loading" @click="recycleBinShow=false">退出</Button>
+        </div>
+    </Modal>
+
+
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
       <div class="model-header" slot="header">
         <p>创建任务</p>
       </div>
       <Form v-if="createtask" ref="taskinfo" :model="taskinfo" :rules="ruleInline">
+
+        任务名称（必填）
         <FormItem prop="name">
           <Input type="text" v-model="taskinfo.name" placeholder="任务名称（必填）" clearable/>
         </FormItem>
 
+        任务简介
         <FormItem prop="description">
           <Input
             type="textarea"
@@ -216,6 +240,7 @@
           />
         </FormItem>
 
+        任务级别
         <FormItem prop="level">
           <Poptip v-model="poptipShow" trigger="click" title="级别" content="content">
             <Input
@@ -233,9 +258,10 @@
           </Poptip>
         </FormItem>
 
+        开始时间
         <FormItem prop="start_time">
           <DatePicker
-            options="start-date-limit"
+            options="start_date_limit"
             type="date"
             v-model="taskinfo.start_time"
             placeholder="开始时间"
@@ -243,9 +269,10 @@
           ></DatePicker>
         </FormItem>
 
+        结束时间
         <FormItem prop="end_time">
           <DatePicker
-            options="finish-date-limit"
+            options="finish_date_limit"
             type="date"
             v-model="taskinfo.end_time"
             placeholder="结束时间"
@@ -253,8 +280,74 @@
           ></DatePicker>
         </FormItem>
 
-        <FormItem prop="owner_id">
-          <Select v-model="taskinfo.member" placeholder="负责人(必选)">
+        <FormItem>
+          <Button long type="success" @click="createsubmit('taskinfo')">创建任务</Button>
+        </FormItem>
+      </Form>
+    </Modal>
+
+    <Modal :width="400" v-model="changetaskmodel" :footer-hide="true">
+      <div class="model-header" slot="header">
+        <p>修改任务</p>
+      </div>
+
+      <Form v-if="changetaskmodel" ref="taskinfo" :model="taskinfo" :rules="ruleInline">
+        任务名称（必填）
+        <FormItem prop="name">
+          <Input type="text" v-model="taskinfo.name" clearable/>
+        </FormItem>
+
+        任务简介
+        <FormItem prop="description">
+          <Input
+            type="textarea"
+            rows="4"
+            v-model="taskinfo.description"
+            clearable
+          />
+        </FormItem>
+        
+        任务级别
+        <FormItem prop="level">
+          <Poptip v-model="poptipShow" trigger="click" title="级别" content="content">
+            <Input
+              style="width:368px"
+              :readonly="true"
+              type="text"
+              v-model="taskinfo.level"
+            />
+            <div class="status-wrap" slot="content">
+              <Button @click="changeLevel('普通')" type="success" class="status-btn" ghost>普通</Button>
+              <Button @click="changeLevel('紧急')" type="warning" class="status-btn" ghost>紧急</Button>
+              <Button @click="changeLevel('非常紧急')" type="error" class="status-btn" ghost>非常紧急</Button>
+            </div>
+          </Poptip>
+        </FormItem>
+        
+        开始时间
+        <FormItem prop="start_time">
+          <DatePicker
+            options="start_date_limit"
+            type="date"
+            v-model="taskinfo.start_time"
+            style="width: 368px"
+          ></DatePicker>
+        </FormItem>
+
+        结束时间
+        <FormItem prop="end_time">
+          <DatePicker
+            options="finish_date_limit"
+            type="date"
+            v-model="taskinfo.end_time"
+            style="width: 368px"
+          ></DatePicker>
+        </FormItem>
+
+        
+        <FormItem prop="owner_id" v-if="taskinfo.state != '待分配'">
+          负责人(必选)
+          <Select v-model="taskinfo.owner_id" >
             <Option
               v-for="memberitem in projectmembers"
               :key="memberitem.id"
@@ -264,7 +357,28 @@
         </FormItem>
 
         <FormItem>
-          <Button long type="success" @click="createsubmit('taskinfo')">完成并创建</Button>
+          <Button long type="success" @click="changeSubmit('taskinfo')">保存修改</Button>
+        </FormItem>
+      </Form>
+    </Modal>
+
+    <Modal :width="400" v-model="chooseMember" :footer-hide="true">
+      <div class="model-header" slot="header">
+        <p>选择负责人</p>
+      </div>
+      <Form v-if="chooseMember" ref="taskinfo" :model="taskinfo" :rules="ruleInline">
+        <FormItem prop="owner_id">
+          <Select v-model="taskinfo.owner_id" placeholder="负责人(必选)">
+            <Option
+              v-for="memberitem in projectmembers"
+              :key="memberitem.id"
+              :value="memberitem.id"
+            >{{memberitem.name}}</Option>
+          </Select>
+        </FormItem>
+
+        <FormItem>
+          <Button long type="success" @click="memberSubmit('taskinfo')">确认</Button>
         </FormItem>
       </Form>
     </Modal>
@@ -378,6 +492,7 @@ export default {
       DrawerValue1: false,
       TabShow: "tasks",
       card_is_delete:[],
+      recycleBinShow:false,
       uploadData: {
         project_id: this.$route.query.projectId
       },
@@ -474,17 +589,92 @@ export default {
 
       fileData: [],
 
+      fileColumnsBin: [
+        {
+          title: "文件名",
+          key: "original_name",
+          width: 330,
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.original_name)
+            ]);
+          }
+        },
+        {
+          title: "上传者",
+          key: "creator_name"
+        },
+        {
+          title: "上传时间",
+          key: "create_time"
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "6px"
+                  },
+                  on: {
+                    click: () => {
+                      this.recycle(params.row.id);
+                    }
+                  }
+                },
+                "恢复"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.delFormBin(params.row.id);
+                    }
+                  }
+                },
+                "彻底删除"
+              )
+            ]);
+          }
+        }
+      ],
+
+      fileDataBin:[],
+
       //shz
       createtask: false,
-      changetask: false,
+      changetaskmodel: false,
       poptipShow: false,
+      chooseMember: false,
       taskinfo: {
-        name: "",
+        created: "",
         description: "",
-        level: "普通",
-        start_time: "",
         end_time: "",
-        member: ""
+        id: "",
+        level: "普通",
+        name: "",
+        owner_id: "",
+        start_time: "",
+        state: "",
       },
       ruleInline: {
         name: [
@@ -496,17 +686,17 @@ export default {
         ]
       },
       tasklist: "",
-      value1: false
-      // start-date-limit: {
-      //     disabledDate (date) {
-      //         return date && date.valueOf() < Date.now() - 86400000;
-      //     }
-      // },
-      // finish-date-limit: {
-      //     disabledDate (date) {
-      //         return date && date.valueOf() < Date.now() - 86400000;
-      //     }
-      // },
+      value1: false,
+      start_date_limit: {
+          disabledDate (date) {
+              return date && date.valueOf() < Date.now() - 86400000;
+          },
+      },
+      finish_date_limit: {
+          disabledDate (date) {
+              return date && date.valueOf() < this.taskinfo.start_time.valueOf();
+          },
+      },
     };
   },
   //渲染task
@@ -556,7 +746,8 @@ export default {
     },
 
     getFiles() {
-      this.fileData = [];
+      this.fileData=[];
+      this.fileDataBin=[];
       this.TabShow = "files";
       console.log("getFiles...", name);
       this.axios
@@ -568,6 +759,8 @@ export default {
             for (var i = 0; i < res.data.data.length; i++) {
               if (res.data.data[i].isDeleted == false) {
                 this.fileData.push(res.data.data[i]);
+              }else{
+                this.fileDataBin.push(res.data.data[i]);
               }
             }
           } else {
@@ -625,6 +818,46 @@ export default {
         },
         onCancel: () => {}
       });
+    },
+
+    recycleBin(){
+      this.recycleBinShow=true;
+      // this.getFiles();
+    },
+
+    recycle(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.post("http://localhost:8090/files/bin/",qs.stringify(data))
+        .then(res => {
+          this.$Modal.success({
+            title: "恢复成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+    },
+
+    delFormBin(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.delete("http://localhost:8090/files/bin?"+qs.stringify(data))
+        .then(res => {
+          console.log(res);
+          this.$Modal.success({
+            title: "彻底删除成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
     },
 
     upProject(name) {
@@ -698,25 +931,23 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           // 建数据包
-
           let data = {
             project_id: this.projectId,
             name: this.taskinfo.name,
             description: this.taskinfo.description,
             level: this.taskinfo.level,
-            state: "待分配",
+            //state: "待分配",
             start_time: getFormatDate(new Date(this.taskinfo.start_time)),
             end_time: getFormatDate(new Date(this.taskinfo.end_time)),
-            owner_id: this.taskinfo.member
+            //owner_id: this.taskinfo.owner_id,
           };
-          console.log(data);
+          console.log("data",data);
           // POST
           this.axios
             .post("http://localhost:8090/projects/tasks/", qs.stringify(data))
             .then(response => {
               console.log(response);
               if (response.data.code == 200) {
-                console.log(111);
                 this.$Message.success("任务创建成功");
                 this.createtask = false;
                 this.reload();
@@ -733,35 +964,153 @@ export default {
       });
     },
 
-    deletetask(taskid) {
-      console.log("delete task:", taskid);
-      let data = {
-        project_id: this.projectId,
-        task_id: String(taskid)
+    changetask(taskid)
+    {
+      for(var taskitem in this.tasklist){
+        if(this.tasklist[taskitem].id == taskid){
+          this.taskinfo = this.tasklist[taskitem];
+          break;
+        };
       };
+      this.changetaskmodel = true;
+    },
+
+    changeSubmit()
+    {
+      console.log("change task:", this.taskinfo.id);
+      console.log(this.taskinfo)
+      this.$Modal.confirm({
+        title: "确定保存修改？",
+        content: "<p>修改后将无法恢复！！！</p>",
+        onOk: () => {
+          let data = this.taskinfo;
+          data.project_id = this.projectId;
+          data.task_id = this.taskinfo.id;
+          data.start_time = getFormatDate(data.start_time);
+          data.end_time = getFormatDate(data.end_time);
+          console.log(data);
+          this.axios
+            .put("http://localhost:8090/projects/tasks?="+qs.stringify(data))
+            .then((response) =>{
+              if (response.data.code == 200) {
+                  this.$Message.success("任务修改成功");
+                  this.changetaskmodel = false;
+                  this.reload();
+              } else {
+                this.$Message.error("任务修改失败");
+              }
+             
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        },
+        onCancel: () => {
+          this.$Message.error("任务修改取消");
+        }
+      });
+    },
+
+    changeState(newstate,taskid){
+      for(var taskitem in this.tasklist){
+        if(this.tasklist[taskitem].id == taskid){
+          this.taskinfo = this.tasklist[taskitem];
+          break;
+        };
+      };
+      if(this.taskinfo.state == "待分配"){
+        this.chooseMember = true;
+      }
+      else{
+        let data = this.taskinfo;
+        data.project_id = this.projectId;
+        data.task_id = this.taskinfo.id;
+        if(newstate == "待分配"){
+            data.owner_id = "";
+        };
+        data.state = newstate;
+        console.log(data);
+        this.axios
+          .put("http://localhost:8090/projects/tasks?="+qs.stringify(data))
+          .then((response) =>{
+            if (response.data.code == 200) {
+                this.$Message.success("任务状态修改成功");
+                this.reload();
+            } else {
+              this.$Message.error("任务状态修改失败");
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    },
+
+    memberSubmit(name)
+    {
+      console.log("确认负责人")
+      let data = {
+        task_id: this.taskinfo.id,
+        project_id: this.projectId,
+        owner_id: this.taskinfo.owner_id,
+      }
       console.log(data);
       this.axios
-        .delete("http://localhost:8090/projects/tasks/", { params: data })
-        .then(response => {
-          console.log("response");
+        .post("http://localhost:8090/projects/members/", qs.stringify(data))
+        .then((response) =>{
           if (response.data.code == 200) {
-            this.$Message.success("任务删除成功");
-            this.reload();
-          } else {
-            this.$Message.error("任务删除失败");
-          }
+              // 修改状态
+              this.$Message.success("负责人确定成功");
+              this.reload();
+            } else {
+              this.$Message.error("负责人确定失败");
+            }
+          this.chooseMember = false;
         })
         .catch(error => {
+          this.chooseMember = false;
           console.log(error);
         });
     },
-    handleSuccess(res, file) {
+
+    deletetask(taskid) {
+      console.log("delete task:", taskid);
+      this.$Modal.confirm({
+        title: "确定删除该任务？",
+        content: "<p>删除后将无法恢复！！！</p>",
+        onOk: () => {
+          let data = {
+            project_id: this.projectId,
+            task_id: String(taskid)
+          };
+          this.axios
+            .delete("http://localhost:8090/projects/tasks/", { params: data })
+            .then(response => {
+              console.log("response");
+              if (response.data.code == 200) {
+                this.$Message.success("任务删除成功");
+                this.reload();
+              } else {
+                this.$Message.error("任务删除失败");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        },
+        onCancel: () => {
+          this.$Message.error("任务删除取消");
+        }
+      });      
+    },
+
+    handleSuccess (res, file) {
+      console.log(res);
+      console.log(file.url)
+    },
+    handleError(res,file){
       console.log(res);
       console.log(file.url);
-    },
-    handleError(res, file) {
-      console.log(res);
-      console.log(file);
     },
 
     deletemember(member_id,index){

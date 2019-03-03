@@ -1,14 +1,21 @@
 <template>
   <Row class-name="Row" type="flex" justify="space-between" align="middle" class="code-row-bg">
     <Col class-name="col-left" span="8">
-    <div align="left">
-      <AutoComplete placeholder="请输入项目名字"  @on-blur="delprojectlist" @on-focus="getprojectlist" 
-      v-model="search_value" :data="project_names" @on-search="filter_project"  style="width:50%">
-      <Option v-for="item in project_names" :value="item.name" :key="item.name" @click="toDetail(item.id)">{{ item.name }}
-      </Option>
-      </AutoComplete>
-      <Button type="text" shape="circle" icon="ios-search" ></Button>
-    </div>
+      <div align="left">
+        <AutoComplete
+          placeholder="请选择一个项目"
+          @on-blur="delprojectlist"
+          @on-focus="getprojectlist"
+          v-model="search_value"
+          :data="project_names"
+          @on-search="filter_project"
+          style="width:50%"
+          @on-select="set_id"
+        >
+          <Option v-for="item in project_names" :value="item.name" :key="item.name">{{ item.name }}</Option>
+        </AutoComplete>
+        <Button type="text" shape="circle" icon="ios-search" @click="toDetail()"></Button>
+      </div>
     </Col>
     <Col class-name="col-center" span="8">
       <div align="center">
@@ -16,30 +23,42 @@
       </div>
     </Col>
     <Col class-name="col-right" span="8">
-    <div align="right">
-      <a href="javascript:" class="btn" @click="calendar">日历</a>
-      <Badge dot :count="count1" class="demo-badge">
-        <Button type="text" shape="circle" icon="md-notifications" size="small" @click="modal1 = true"></Button>
-      </Badge>&nbsp;
-      <Badge dot :count="count2">
-        <Button type="text" shape="circle" icon="md-text" size="small"></Button>
-      </Badge>
-      <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
-    </div>
+      <div align="right">
+        <a href="javascript:" class="btn" @click="calendar">日历</a>
+        <Badge dot :count="count1" class="demo-badge">
+          <Button
+            type="text"
+            shape="circle"
+            icon="md-notifications"
+            size="small"
+            @click="modal1 = true"
+          ></Button>
+        </Badge>&nbsp;
+        <Badge dot :count="count2">
+          <Button type="text" shape="circle" icon="md-text" size="small"></Button>
+        </Badge>
+        <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
+      </div>
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">
       <li type="none">
         <h5>具体信息：</h5>
       </li>
       <Scroll>
-        <li class="invite-item" v-for="(invitationitem,index) in invitationList" data-index="index" :key="index" type="none">
+        <li
+          class="invite-item"
+          v-for="(invitationitem,index) in invitationList"
+          data-index="index"
+          :key="index"
+          type="none"
+        >
           <div>
             <Card v-if="card[index]" long>
               <ul>
                 <li>项目名称：{{invitationitem.project_name}}</li>
-                <Divider class="div" />
+                <Divider class="div"/>
                 <li>发起人：{{invitationitem.inviter}}</li>
-                <Divider class="div" />
+                <Divider class="div"/>
                 <div align="right">
                   <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
                   <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
@@ -51,7 +70,6 @@
       </Scroll>
     </Modal>
   </Row>
-
 </template>
 
 <script>
@@ -67,7 +85,8 @@ export default {
       invitationList: "",
       timer: null,
       search_value: "",
-      project_names: ""
+      project_names: "",
+      project_id: ""
     };
   },
   created: function() {
@@ -168,34 +187,64 @@ export default {
       this.$router.push("calendar");
     },
     toDetail(value) {
-      // this.$router.push({
-      //   path: "/projectdetail",
-      //   query: { projectId: value }
-      // });
-      console.log("123456","todetail success");
-      
-    },
-    filter_project(value,option){
-      console.log(option);
-      
-      return option.name.indexOf(value) !== -1;
-    },
-    getprojectlist(){
       this.axios
-      .get("http://localhost:8090/projects/")
-      .then(response => {
-        console.log(response.data.data);
-        // for(var i=0;i<response.data.data.length;i++){
-        //   this.project_names.push(response.data.data[i].name);
-        // }
-        this.project_names=response.data.data;
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+        .get("http://localhost:8090/projects/")
+        .then(response => {
+          console.log(response.data.data);
+          // for(var i=0;i<response.data.data.length;i++){
+          //   this.project_names.push(response.data.data[i].name);
+          // }
+          // this.project_names=response.data.data;
+          for (var i = 0; i < response.data.data.length; i++) {
+            if (this.search_value == response.data.data[i].name) {
+              // console.log(this.project_names[i].name);
+
+              this.project_id = response.data.data[i].id;
+              break;
+            }
+          }
+          console.log("???");
+          
+          this.$router.push({
+            path: "/projectdetail",
+            query: { projectId: String(this.project_id) }
+          });
+          this.reload();
+          console.log("123456", this.project_id);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
-    delprojectlist(){
-      this.project_names=[];
+    filter_project(value) {
+      console.log("this is value", value);
+      // console.log("this is option",option);
+      var option = [];
+      for (var i = 0; i < this.project_names.length; i++) {
+        option.push(this.project_names[i].name);
+      }
+      return option.indexOf(value) !== -1;
+    },
+    getprojectlist() {
+      this.axios
+        .get("http://localhost:8090/projects/")
+        .then(response => {
+          console.log(response.data.data);
+          // for(var i=0;i<response.data.data.length;i++){
+          //   this.project_names.push(response.data.data[i].name);
+          // }
+          this.project_names = response.data.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    delprojectlist() {
+      this.project_names = [];
+    },
+    set_id(value) {
+      this.set_project_id = value;
+      console.log(this.set_project_id);
     }
   }
 };

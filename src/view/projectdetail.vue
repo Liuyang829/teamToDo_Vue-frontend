@@ -74,6 +74,7 @@
                     <li>任务简介：{{taskitem.description}}</li>
                   </ul>
                 </Card>
+
                 <br>
               </li>
 
@@ -704,6 +705,7 @@ export default {
     console.log(this.userInfo);
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
+    
 
     //获取项目详情和任务列表
     this.axios

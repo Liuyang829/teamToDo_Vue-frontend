@@ -19,11 +19,19 @@
     </Col>
     <Col class-name="col-center" span="8">
       <div align="center">
+        <Button ghost type="text" size="large">
         <h3 style="color:#2d8cf0">TeamToDo</h3>
+        </Button>
       </div>
     </Col>
     <Col class-name="col-right" span="8">
+<<<<<<< HEAD
       <div align="right">
+=======
+<<<<<<< HEAD
+      <div align="right">
+        
+>>>>>>> 64c1a5473e7c2c7b74ae30bac24b9b68bcc67e93
         <a href="javascript:" class="btn" @click="calendar">日历</a>
         <Badge dot :count="count1" class="demo-badge">
           <Button
@@ -39,6 +47,21 @@
         </Badge>
         <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
       </div>
+<<<<<<< HEAD
+=======
+=======
+    <div align="right">
+      <a href="javascript:" class="btn" @click="calendar">日历</a>
+      <Badge dot :count="count1" class="demo-badge">
+        <Button type="text" shape="circle" icon="md-notifications" size="small" @click="modal1 = true"></Button>
+      </Badge>&nbsp;
+      <Badge dot :count="count2">
+        <Button type="text" shape="circle" icon="md-text" size="small"></Button>
+      </Badge>
+      <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+    </div>
+>>>>>>> bafb726886894bd84ec898509cd693c3d0a1ae43
+>>>>>>> 64c1a5473e7c2c7b74ae30bac24b9b68bcc67e93
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">
       <li type="none">

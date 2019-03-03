@@ -3,7 +3,7 @@
     <div class="video-container">
       <div class="register">
         <h1 class="title">注册TeamToDo</h1>
-        <Form ref="formCustom" :model="registerForm" :rules="registerRule">
+        <Form ref="formRegister" :model="registerForm" :rules="registerRule">
           <FormItem prop="email">
             <Input type="text" placeholder="邮箱" v-model="registerForm.email">
               <Icon type="ios-mail-outline" slot="prepend"></Icon>
@@ -15,7 +15,7 @@
                 <Input type="text" placeholder="输入验证码" v-model="registerForm.code"></Input>
               </Col>
               <Col span="12">
-                <Button size="large" type="primary" long @click="submitcode('formCustom')">获取验证码</Button>
+                <Button size="large" type="primary" long @click="submitcode()">获取验证码</Button>
               </Col>
             </Row>
           </FormItem>
@@ -30,7 +30,7 @@
             </Input>
           </FormItem>
           <FormItem>
-            <Button size="large" type="primary" long @click="handleSubmit('formCustom')">注册</Button>
+            <Button size="large" type="primary" long @click="handleSubmit('formRegister')">注册</Button>
           </FormItem>
         </Form>
       </div>
@@ -67,7 +67,8 @@ export default {
       registerForm: {
         email: "",
         username: "",
-        password: ""
+        password: "",
+        code:""
       },
       registerRule: {
         email: [
@@ -98,18 +99,19 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          console.log("re");
           let formData = new FormData();
 
           formData.append("email", this.registerForm.email);
           formData.append("name", this.registerForm.username);
           formData.append("password", this.registerForm.password);
-          formDtat.append("code", this.registerForm.code);
+          formData.append("code", this.registerForm.code);
           let config = {
             headers: {
               "Content-Type": "multipart/form-data"
             }
           };
-
+          console.log(formData);
           this.axios
             .post("http://localhost:8090/register/", formData, config)
             .then(res => {
@@ -126,9 +128,9 @@ export default {
         }
       });
     },
-    submitcode(name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
+    submitcode() {
+      
+          console.log("dawd");
           let formData = new FormData();
           formData.append("email", this.registerForm.email);
 
@@ -146,12 +148,6 @@ export default {
             .catch(res => {
               console.log(res);
             });
-
-          this.$Message.success("成功获取验证码");
-        } else {
-          this.$Message.error("请输入正确的邮箱");
-        }
-      });
     }
   },
   mounted: function() {

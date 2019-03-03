@@ -1,52 +1,45 @@
 <template>
   <Row class-name="Row" type="flex" justify="space-between" align="middle" class="code-row-bg">
     <Col class-name="col-left" span="8">
-      <div align="left">
-        <Input prefix="ios-search" placeholder="Enter something..." style="width:50%"/>
-      </div>
+    <div align="left">
+      <AutoComplete placeholder="请输入项目名字"  @on-blur="delprojectlist" @on-focus="getprojectlist" 
+      v-model="search_value" :data="project_names" @on-search="filter_project"  style="width:50%">
+      <Option v-for="item in project_names" :value="item.name" :key="item.name" @click="toDetail(item.id)">{{ item.name }}
+      </Option>
+      </AutoComplete>
+      <Button type="text" shape="circle" icon="ios-search" ></Button>
+    </div>
     </Col>
     <Col class-name="col-center" span="8">
-      <div align="center">
-        <h3>TeamToDo</h3>
-      </div>
+    <div align="center">
+      <h3>TeamToDo</h3>
+    </div>
     </Col>
     <Col class-name="col-right" span="8">
-      <div align="right">
-        <a href="javascript:" class="btn" @click="calendar">日历</a>
-        <Badge dot :count="count1" class="demo-badge">
-          <Button
-            type="text"
-            shape="circle"
-            icon="md-notifications"
-            size="small"
-            @click="modal1 = true"
-          ></Button>
-        </Badge>&nbsp;
-        <Badge dot :count="count2">
-          <Button type="text" shape="circle" icon="md-text" size="small"></Button>
-        </Badge>
-        <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
-      </div>
+    <div align="right">
+      <a href="javascript:" class="btn" @click="calendar">日历</a>
+      <Badge dot :count="count1" class="demo-badge">
+        <Button type="text" shape="circle" icon="md-notifications" size="small" @click="modal1 = true"></Button>
+      </Badge>&nbsp;
+      <Badge dot :count="count2">
+        <Button type="text" shape="circle" icon="md-text" size="small"></Button>
+      </Badge>
+      <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+    </div>
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">
       <li type="none">
         <h5>具体信息：</h5>
       </li>
       <Scroll>
-        <li
-          class="invite-item"
-          v-for="(invitationitem,index) in invitationList"
-          data-index="index"
-          :key="index"
-          type="none"
-        >
+        <li class="invite-item" v-for="(invitationitem,index) in invitationList" data-index="index" :key="index" type="none">
           <div>
             <Card v-if="card[index]" long>
               <ul>
                 <li>项目名称：{{invitationitem.project_name}}</li>
-                <Divider class="div"/>
+                <Divider class="div" />
                 <li>发起人：{{invitationitem.inviter}}</li>
-                <Divider class="div"/>
+                <Divider class="div" />
                 <div align="right">
                   <Button type="success" @click="accept(invitationitem.id,index)">接受</Button>
                   <Button type="error" @click="refuse(invitationitem.id,index)">拒绝</Button>
@@ -58,9 +51,6 @@
       </Scroll>
     </Modal>
   </Row>
-
-   
-
 
 </template>
 
@@ -76,6 +66,8 @@ export default {
       card: [],
       invitationList: "",
       timer: null,
+      search_value: "",
+      project_names: ""
     };
   },
   created: function() {
@@ -98,7 +90,7 @@ export default {
           if (res.data.code == 200) {
             this.invitationList = res.data.data;
             console.log(this.invitationList.length);
-            this.count1=0;
+            this.count1 = 0;
             this.count1 += res.data.data.length;
             console.log(this.count1);
             this.card = [];
@@ -118,8 +110,7 @@ export default {
         this.timer = setInterval(() => {
           console.log("this is timer", "定时发生（10s)");
           this.getList();
-          console.log("count1",this.count1);
-          
+          console.log("count1", this.count1);
         }, 10000);
       }
     },
@@ -137,8 +128,8 @@ export default {
           if (response.data.code == 200) {
             this.$Message.success("接受成功");
             this.count1 -= 1;
-            console.log("count1:",this.count1);
-            
+            console.log("count1:", this.count1);
+
             this.card[index] = false;
           } else {
             this.$Message.error("接受失败");
@@ -162,8 +153,8 @@ export default {
           if (response.data.code == 200) {
             this.$Message.success("拒绝成功");
             this.count1 -= 1;
-            console.log("count1:",this.count1);
-            
+            console.log("count1:", this.count1);
+
             this.card[index] = false;
           } else {
             this.$Message.error("拒绝失败");
@@ -175,6 +166,36 @@ export default {
     },
     calendar() {
       this.$router.push("calendar");
+    },
+    toDetail(value) {
+      // this.$router.push({
+      //   path: "/projectdetail",
+      //   query: { projectId: value }
+      // });
+      console.log("123456","todetail success");
+      
+    },
+    filter_project(value,option){
+      console.log(option);
+      
+      return option.name.indexOf(value) !== -1;
+    },
+    getprojectlist(){
+      this.axios
+      .get("http://localhost:8090/projects/")
+      .then(response => {
+        console.log(response.data.data);
+        // for(var i=0;i<response.data.data.length;i++){
+        //   this.project_names.push(response.data.data[i].name);
+        // }
+        this.project_names=response.data.data;
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+    },
+    delprojectlist(){
+      this.project_names=[];
     }
   }
 };
@@ -185,16 +206,16 @@ export default {
 .Row {
   height: 50px;
   background: #fff;
-  .col-left{
+  .col-left {
     padding: 5px;
   }
 
-  .col-center{
+  .col-center {
     font-size: 20px;
-    color:black;
+    color: black;
   }
 
-  .col-right{
+  .col-right {
     padding: 5px;
     font-size: 14px;
     color: gray;
@@ -206,10 +227,9 @@ export default {
       margin: 0 10px;
       font-size: 18px;
     }
-    .avatar{
+    .avatar {
       margin: 0px 10px;
     }
   }
-  
 }
 </style>

@@ -323,8 +323,8 @@
 
       <Divider orientation="center">项目成员</Divider>
       <ul>
-        <li v-for="member in projectmembers" :key="member">
-          <Card long>
+        <li v-for="(member,index) in projectmembers" :key="member">
+          <Card long v-if="card_is_delete[index]==false">
             <Row type="flex" justify="center" align="middle">
               <Col span="12">
                 <div>
@@ -340,6 +340,7 @@
                   shape="circle"
                   icon="md-close"
                   v-if="member.role=='member'"
+                  @click="deletemember(member.id,index)"
                 ></Button>
               </Col>
             </Row>
@@ -376,6 +377,7 @@ export default {
       Message: false,
       DrawerValue1: false,
       TabShow: "tasks",
+      card_is_delete:[],
       uploadData: {
         project_id: this.$route.query.projectId
       },
@@ -524,6 +526,12 @@ export default {
           this.projectInfo = response.data.data.project;
           this.tasklist = response.data.data.tasks;
           this.projectmembers = response.data.data.members;
+
+          for(var i=0;i<this.projectmembers.length;i++){
+            this.card_is_delete.push(false);
+          }
+          console.log(this.card_is_delete);
+          
           console.log("tasklist:");
           console.log(this.tasklist);
           console.log("projectmembers:");
@@ -755,6 +763,37 @@ export default {
       console.log(res);
       console.log(file);
     },
+
+    deletemember(member_id,index){
+      // console.log(index,member_id);
+      this.card_is_delete[index]=true;
+      let data = {
+        project_id: this.projectId,
+        member_id:String(member_id)
+      };
+      this.$Modal.confirm({
+        content: "确认删除该人员？",
+        onOk: () => {
+          this.axios
+            .delete("http://localhost:8090/projects/members/", {
+              params: data
+            })
+            .then(response => {
+              if (response.data.code == 200) {
+                this.$Message.success("删除成功");
+                this.reload();
+              } else {
+                this.$Message.error("删除失败");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        },
+        onCancel: () => {}
+      });
+      
+    }
 
 
   }

@@ -3,18 +3,18 @@
     <Form ref="formCustom" :model="registerForm" :rules="registerRule">
       <FormItem prop="email">
         <Input type="text" placeholder="邮箱" v-model="registerForm.email">
-          <Icon type="ios-mail-outline" slot="prepend"></Icon>
+        <Icon type="ios-mail-outline" slot="prepend"></Icon>
         </Input>
       </FormItem>
 
       <FormItem prop="username">
         <Input type="text" placeholder="用户名" v-model="registerForm.username">
-          <Icon type="ios-person-outline" slot="prepend"></Icon>
+        <Icon type="ios-person-outline" slot="prepend"></Icon>
         </Input>
       </FormItem>
       <FormItem prop="password">
         <Input type="password" placeholder="密码" v-model="registerForm.password">
-          <Icon type="ios-person-outline" slot="prepend"></Icon>
+        <Icon type="ios-person-outline" slot="prepend"></Icon>
         </Input>
       </FormItem>
       <FormItem>
@@ -48,20 +48,30 @@ export default {
       }
     };
   },
+  created: function() {
+    // 主页添加键盘事件,注意,不能直接在焦点事件上添加回车
+    var that = this;
+    document.onkeydown = function(e) {
+      var key = window.event.keyCode;
+      if (key == 13) {
+        that.handleSubmit("formCustom");
+      }
+    };
+  },
 
   methods: {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
           let formData = new FormData();
-          
+
           formData.append("email", this.registerForm.email);
           formData.append("name", this.registerForm.username);
           formData.append("password", this.registerForm.password);
 
           let config = {
             headers: {
-              "Content-Type": "multipart/form-data",
+              "Content-Type": "multipart/form-data"
             }
           };
 
@@ -75,7 +85,7 @@ export default {
             });
 
           this.$Message.success("Success!");
-          this.$router.push("home");
+          this.$router.push({ path: "/" });
         } else {
           this.$Message.error("请输入正确的用户名密码");
         }

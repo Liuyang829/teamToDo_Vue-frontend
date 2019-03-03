@@ -2,13 +2,23 @@
   <div class="homepage-hero-module">
     <div class="video-container">
       <div class="register">
+        <h1 class="title">注册TeamToDo</h1>
         <Form ref="formCustom" :model="registerForm" :rules="registerRule">
           <FormItem prop="email">
             <Input type="text" placeholder="邮箱" v-model="registerForm.email">
               <Icon type="ios-mail-outline" slot="prepend"></Icon>
             </Input>
           </FormItem>
-
+          <FormItem>
+            <Row :gutter="16">
+              <Col span="12">
+                <Input type="text" placeholder="输入验证码" v-model="registerForm.code"></Input>
+              </Col>
+              <Col span="12">
+                <Button size="large" type="primary" long @click="submitcode('formCustom')">获取验证码</Button>
+              </Col>
+            </Row>
+          </FormItem>
           <FormItem prop="username">
             <Input type="text" placeholder="用户名" v-model="registerForm.username">
               <Icon type="ios-person-outline" slot="prepend"></Icon>
@@ -20,7 +30,7 @@
             </Input>
           </FormItem>
           <FormItem>
-            <Button type="primary" long @click="handleSubmit('formCustom')">注册</Button>
+            <Button size="large" type="primary" long @click="handleSubmit('formCustom')">注册</Button>
           </FormItem>
         </Form>
       </div>
@@ -93,7 +103,7 @@ export default {
           formData.append("email", this.registerForm.email);
           formData.append("name", this.registerForm.username);
           formData.append("password", this.registerForm.password);
-
+          formDtat.append("code", this.registerForm.code);
           let config = {
             headers: {
               "Content-Type": "multipart/form-data"
@@ -113,6 +123,33 @@ export default {
           this.$router.push({ path: "/" });
         } else {
           this.$Message.error("请输入正确的用户名密码");
+        }
+      });
+    },
+    submitcode(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          let formData = new FormData();
+          formData.append("email", this.registerForm.email);
+
+          let config = {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          };
+
+          this.axios
+            .post("http://localhost:8090/code/", formData, config)
+            .then(res => {
+              console.log(res);
+            })
+            .catch(res => {
+              console.log(res);
+            });
+
+          this.$Message.success("成功获取验证码");
+        } else {
+          this.$Message.error("请输入正确的邮箱");
         }
       });
     }
@@ -180,5 +217,10 @@ export default {
     color: #a6a6a6;
   }
   z-index: 999;
+}
+.title {
+  color: aliceblue;
+  text-align: center;
+  font-size: 30px;
 }
 </style>

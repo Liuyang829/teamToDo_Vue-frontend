@@ -1,26 +1,30 @@
 <template>
   <div class="homepage-hero-module">
     <div class="video-container">
+      
       <div class="register">
+        <h1 style="color:white">注册TeamToDo</h1>
+        <br>
         <Form ref="formCustom" :model="registerForm" :rules="registerRule">
           <FormItem prop="email">
-            <Input type="text" placeholder="邮箱" v-model="registerForm.email">
-              <Icon type="ios-mail-outline" slot="prepend"></Icon>
+            <Input type="text" placeholder="邮箱" v-model="registerForm.email" size="large">
+              <Icon type="md-mail" slot="prepend" size="20"></Icon>
             </Input>
           </FormItem>
 
           <FormItem prop="username">
-            <Input type="text" placeholder="用户名" v-model="registerForm.username">
-              <Icon type="ios-person-outline" slot="prepend"></Icon>
+            <Input type="text" placeholder="用户名" v-model="registerForm.username" size="large">
+              <Icon type="md-person" slot="prepend" size="20"></Icon>
             </Input>
           </FormItem>
+
           <FormItem prop="password">
-            <Input type="password" placeholder="密码" v-model="registerForm.password">
-              <Icon type="ios-person-outline" slot="prepend"></Icon>
+            <Input type="password" placeholder="密码" v-model="registerForm.password" size="large">
+              <Icon type="md-key" slot="prepend" size="20"></Icon>
             </Input>
           </FormItem>
           <FormItem>
-            <Button type="primary" long @click="handleSubmit('formCustom')">注册</Button>
+            <Button type="primary" long @click="handleSubmit('formCustom')" size="large"><h3>注册</h3></Button>
           </FormItem>
         </Form>
       </div>

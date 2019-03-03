@@ -7,11 +7,14 @@
     </Col>
     <Col class-name="col-center" span="8">
       <div align="center">
+        <Button ghost type="text" size="large">
         <h3 style="color:#2d8cf0">TeamToDo</h3>
+        </Button>
       </div>
     </Col>
     <Col class-name="col-right" span="8">
       <div align="right">
+        
         <a href="javascript:" class="btn" @click="calendar">日历</a>
         <Badge dot :count="count1" class="demo-badge">
           <Button

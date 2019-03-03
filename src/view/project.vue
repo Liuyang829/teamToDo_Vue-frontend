@@ -1,7 +1,7 @@
 <template>
   <div class="project-content">
-    <p class="project-title">我负责的项目</p>
-
+    <h3 class="project-title">我负责的项目</h3>
+    
     <ul class="project-list">
       <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
@@ -42,6 +42,7 @@
         <Icon class="add-icon" @click="show = true" type="ios-add-circle"/>
         <p>创建新项目</p>
       </li>
+
     </ul>
 
     <p class="project-title">我参与的项目</p>
@@ -71,16 +72,6 @@
         </div>
       </li>
     </ul>
-
-    <Row>
-      <Col span="4" offset="18">
-        <Progress :percent="80" hide-info status="active"/>
-      </Col>
-      <span>{{count}}</span>
-      <span>/</span>
-      <span>10</span>
-      <span>icon</span>
-    </Row>
 
     <Modal :width="400" v-model="show" :footer-hide="true">
       <div class="model-header" slot="header">
@@ -181,8 +172,8 @@ export default {
       imgSrc: [
         "https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         "https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        "https://images.pexels.com/photos/844297/pexels-photo-844297.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        "https://images.pexels.com/photos/1068989/pexels-photo-1068989.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/934011/pexels-photo-934011.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
       ]
       // options3: {
       //       disabledDate (date) {

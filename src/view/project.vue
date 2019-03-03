@@ -3,8 +3,7 @@
     <p class="project-title">我负责的项目</p>
 
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name">
-        <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
+      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
           src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
         >
@@ -47,17 +46,27 @@
 
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
-      <li class="project-item">
+      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='member'" >
         <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
-        <img src="https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg">
-        <div class="project-mask">
+        <img
+          src="https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+        >
+
+        <div class="project-mask" @click="toDetail(item.id)">
+          <div class="project-mask-level" v-if="item.level=='普通'" style="background-color:#2db7f5"></div>
+          <div class="project-mask-level" v-if="item.level=='紧急'" style="background-color:#ff9900"></div>
+          <div
+            class="project-mask-level"
+            v-if="item.level=='非常紧急'"
+            style="background-color:#ed4014"
+          ></div>
           <div class="project-mask-header">
-            <p class="project-mask-title">产品进展</p>
-            <div>
-              <Tooltip content="打开设置设置" placement="top">
-                <Icon class="icon" type="md-create"/>
-              </Tooltip>
-            </div>
+            <h3 class="project-mask-title">{{item.name}}</h3>
+          </div>
+          <div class="project-mask-body">
+            <p
+              style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+            >{{item.description}}</p>
           </div>
         </div>
       </li>
@@ -206,7 +215,6 @@ export default {
     },
     delProject(projectId) {
       this.pressDel = true;
-      console.log("del", projectId);
       this.$Modal.confirm({
         title: "确定删除该项目？",
         content: "<p>确定删除该项目？</p><p>确定删除该项目？</p>",

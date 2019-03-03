@@ -7,7 +7,7 @@
     </Col>
     <Col class-name="col-center" span="8">
       <div align="center">
-        <h3>TeamToDo</h3>
+        <h3 style="color:#2d8cf0">TeamToDo</h3>
       </div>
     </Col>
     <Col class-name="col-right" span="8">

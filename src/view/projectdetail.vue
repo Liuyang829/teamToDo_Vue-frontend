@@ -178,6 +178,7 @@
       </TabPane>
 
       <TabPane name="files" label="文件" icon="md-folder">
+        <div style="padding: 0px 0">
         <Upload
           multiple
           type="drag"
@@ -187,15 +188,35 @@
           :data="uploadData"
           :with-credentials="true"
         >
+        
           <div style="padding: 20px 0">
             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
             <h3>点击或将文件拖拽至此区域上传</h3>
           </div>
         </Upload>
-
+        </div>
+        <div style="padding: 20px 0" align="right">
+        <Button type="primary" shape="circle" icon="md-trash" @click="recycleBin()" size="large">文件回收站</Button>
+        </div>
         <Table border :columns="fileColumns" :data="fileData" size="large"></Table>
       </TabPane>
+        
     </Tabs>
+
+    <Modal v-model="recycleBinShow" width="50%">
+        <div slot="header" style="color:#f60;text-align:center;height:100;font-size:30px" >
+            <Icon type="md-trash"></Icon>
+            <span >文件回收站</span>
+        </div>
+        <div style="text-align:center">
+            <Table height="400" border :columns="fileColumnsBin" :data="fileDataBin" size="large"></Table>
+        </div>
+        <div slot="footer" width="30%">
+            <Button type="error" size="large" long :loading="modal_loading" @click="recycleBinShow=false">退出</Button>
+        </div>
+    </Modal>
+
+
 
     <Modal :width="400" v-model="createtask" :footer-hide="true">
       <div class="model-header" slot="header">
@@ -376,6 +397,7 @@ export default {
       Message: false,
       DrawerValue1: false,
       TabShow: "tasks",
+      recycleBinShow:false,
       uploadData: {
         project_id: this.$route.query.projectId
       },
@@ -472,6 +494,77 @@ export default {
 
       fileData: [],
 
+      fileColumnsBin: [
+        {
+          title: "文件名",
+          key: "original_name",
+          width: 330,
+          render: (h, params) => {
+            return h("div", [
+              h("Icon", {
+                props: {
+                  type: "person"
+                }
+              }),
+              h("strong", params.row.original_name)
+            ]);
+          }
+        },
+        {
+          title: "上传者",
+          key: "creator_name"
+        },
+        {
+          title: "上传时间",
+          key: "create_time"
+        },
+        {
+          title: "操作",
+          key: "action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "6px"
+                  },
+                  on: {
+                    click: () => {
+                      this.recycle(params.row.id);
+                    }
+                  }
+                },
+                "恢复"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.delFormBin(params.row.id);
+                    }
+                  }
+                },
+                "彻底删除"
+              )
+            ]);
+          }
+        }
+      ],
+
+      fileDataBin:[],
+
       //shz
       createtask: false,
       changetask: false,
@@ -548,7 +641,8 @@ export default {
     },
 
     getFiles() {
-      this.fileData = [];
+      this.fileData=[];
+      this.fileDataBin=[];
       this.TabShow = "files";
       console.log("getFiles...", name);
       this.axios
@@ -560,6 +654,8 @@ export default {
             for (var i = 0; i < res.data.data.length; i++) {
               if (res.data.data[i].isDeleted == false) {
                 this.fileData.push(res.data.data[i]);
+              }else{
+                this.fileDataBin.push(res.data.data[i]);
               }
             }
           } else {
@@ -617,6 +713,46 @@ export default {
         },
         onCancel: () => {}
       });
+    },
+
+    recycleBin(){
+      this.recycleBinShow=true;
+      // this.getFiles();
+    },
+
+    recycle(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.post("http://localhost:8090/files/bin/",qs.stringify(data))
+        .then(res => {
+          this.$Modal.success({
+            title: "恢复成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+    },
+
+    delFormBin(fileId){
+      let data={
+        file_id:fileId,
+        project_id:this.projectId
+      }
+      this.axios.delete("http://localhost:8090/files/bin?"+qs.stringify(data))
+        .then(res => {
+          console.log(res);
+          this.$Modal.success({
+            title: "彻底删除成功",
+          });
+          this.getFiles();
+        })
+        .catch(error =>{
+          console.log(error);
+        })
     },
 
     upProject(name) {

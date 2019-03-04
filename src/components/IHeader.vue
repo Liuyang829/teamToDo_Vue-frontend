@@ -14,24 +14,18 @@
         >
           <Option v-for="item in project_names" :value="item.name" :key="item.name">{{ item.name }}</Option>
         </AutoComplete>
-        <Button type="text" shape="circle" icon="ios-search" @click="toDetail()"></Button>
+        <Button type="text" shape="circle" icon="ios-arrow-round-forward" @click="toDetail()"></Button>
       </div>
     </Col>
     <Col class-name="col-center" span="8">
       <div align="center">
-        <Button ghost type="text" size="large">
-        <h3 style="color:#2d8cf0">TeamToDo</h3>
+        <Button ghost type="text" size="large" @click="backhome()">
+          <h3 style="color:#2d8cf0">TeamToDo</h3>
         </Button>
       </div>
     </Col>
     <Col class-name="col-right" span="8">
-<<<<<<< HEAD
       <div align="right">
-=======
-<<<<<<< HEAD
-      <div align="right">
-        
->>>>>>> 64c1a5473e7c2c7b74ae30bac24b9b68bcc67e93
         <a href="javascript:" class="btn" @click="calendar">日历</a>
         <Badge dot :count="count1" class="demo-badge">
           <Button
@@ -42,26 +36,16 @@
             @click="modal1 = true"
           ></Button>
         </Badge>&nbsp;
-        <Badge dot :count="count2">
+        <!-- <Badge dot :count="count2">
           <Button type="text" shape="circle" icon="md-text" size="small"></Button>
-        </Badge>
-        <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg"/>
+        </Badge>-->
+        <!-- <Avatar
+          class="avatar"
+          src="https://i.loli.net/2017/08/21/599a521472424.jpg"
+          @click="show_personal_detail()"
+        />-->
+        <Button type="primary" shape="circle">{{userInfo.name}}</Button>
       </div>
-<<<<<<< HEAD
-=======
-=======
-    <div align="right">
-      <a href="javascript:" class="btn" @click="calendar">日历</a>
-      <Badge dot :count="count1" class="demo-badge">
-        <Button type="text" shape="circle" icon="md-notifications" size="small" @click="modal1 = true"></Button>
-      </Badge>&nbsp;
-      <Badge dot :count="count2">
-        <Button type="text" shape="circle" icon="md-text" size="small"></Button>
-      </Badge>
-      <Avatar class="avatar" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
-    </div>
->>>>>>> bafb726886894bd84ec898509cd693c3d0a1ae43
->>>>>>> 64c1a5473e7c2c7b74ae30bac24b9b68bcc67e93
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">
       <li type="none">
@@ -101,6 +85,7 @@ export default {
   name: "IHeader",
   data() {
     return {
+      userInfo: JSON.parse(localStorage.getItem("userInfo")),
       modal1: false,
       count1: 0,
       count2: 0,
@@ -209,7 +194,7 @@ export default {
     calendar() {
       this.$router.push("calendar");
     },
-    toDetail(value) {
+    toDetail() {
       this.axios
         .get("http://localhost:8090/projects/")
         .then(response => {
@@ -218,21 +203,22 @@ export default {
           //   this.project_names.push(response.data.data[i].name);
           // }
           // this.project_names=response.data.data;
+          var flag = 0;
           for (var i = 0; i < response.data.data.length; i++) {
             if (this.search_value == response.data.data[i].name) {
               // console.log(this.project_names[i].name);
-
               this.project_id = response.data.data[i].id;
+              this.$router.push({
+                path: "/projectdetail",
+                query: { projectId: String(this.project_id) }
+              });
+              flag = 1;
               break;
             }
           }
-          console.log("???");
-          
-          this.$router.push({
-            path: "/projectdetail",
-            query: { projectId: String(this.project_id) }
-          });
-          this.reload();
+          if (flag == 0) {
+            this.$Message.error("没有找到您搜索的项目，请重新选择");
+          }
           console.log("123456", this.project_id);
         })
         .catch(function(error) {
@@ -268,6 +254,12 @@ export default {
     set_id(value) {
       this.set_project_id = value;
       console.log(this.set_project_id);
+    },
+    backhome() {
+      this.$router.push("home");
+    },
+    show_personal_detail() {
+      this.$Message.success("okkkkkkkk");
     }
   }
 };

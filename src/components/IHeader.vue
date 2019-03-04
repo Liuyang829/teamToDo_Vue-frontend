@@ -44,7 +44,28 @@
           src="https://i.loli.net/2017/08/21/599a521472424.jpg"
           @click="show_personal_detail()"
         />-->
-        <Button type="primary" shape="circle">{{userInfo.name}}</Button>
+        <!-- <Button type="primary" shape="circle">{{userInfo.name}}</Button> -->
+        <Carousel
+          :autoplay="true"
+          :autoplay-speed="setting.autoplaySpeed"
+          :dots="setting.dots"
+          :radius-dot="setting.radiusDot"
+          :trigger="setting.trigger"
+          :arrow="setting.arrow"
+        >
+          <CarouselItem>
+            <div class="demo-carousel">1</div>
+          </CarouselItem>
+          <CarouselItem>
+            <div class="demo-carousel">2</div>
+          </CarouselItem>
+          <CarouselItem>
+            <div class="demo-carousel">3</div>
+          </CarouselItem>
+          <CarouselItem>
+            <div class="demo-carousel">4</div>
+          </CarouselItem>
+        </Carousel>
       </div>
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">

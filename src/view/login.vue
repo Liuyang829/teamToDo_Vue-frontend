@@ -5,17 +5,21 @@
         <h1 class="title">TeamToDo</h1>
         <Form ref="formCustom" :model="loginForm" :rules="loginRule">
           <FormItem prop="email">
-            <Input type="text" placeholder="邮箱" v-model="loginForm.email"/>
+            <Input type="text" placeholder="邮箱" v-model="loginForm.email" >
+            <Icon type="md-mail" slot="prepend" size="20"></Icon>
+            </Input>
           </FormItem>
           <FormItem prop="password">
-            <Input type="password" placeholder="密码" v-model="loginForm.password"/>
+            <Input type="password" placeholder="密码" v-model="loginForm.password">
+            <Icon type="md-person" slot="prepend" size="20"></Icon>
+            </Input>
           </FormItem>
           <Row :gutter="16">
             <Col span="12">
-              <Button type="primary" long @click="handleSubmit('formCustom')">登录</Button>
+              <Button type="primary" long @click="handleSubmit('formCustom')"><h2>登录</h2></Button>
             </Col>
             <Col span="12">
-              <Button type="primary" long @click="toRegister('formCustom')">注册</Button>
+              <Button type="primary" long @click="toRegister('formCustom')"><h2>注册</h2></Button>
             </Col>
           </Row>
         </Form>

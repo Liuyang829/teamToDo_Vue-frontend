@@ -46,25 +46,25 @@
         />-->
         <!-- <Button type="primary" shape="circle">{{userInfo.name}}</Button> -->
         <Carousel
+        :loop="true"
           :autoplay="true"
-          :autoplay-speed="setting.autoplaySpeed"
-          :dots="setting.dots"
-          :radius-dot="setting.radiusDot"
-          :trigger="setting.trigger"
-          :arrow="setting.arrow"
+          :autoplay-speed="5000"
+          :dots="none"
+          :trigger="click"
+          :arrow="hover"
         >
           <CarouselItem>
-            <div class="demo-carousel">1</div>
+            <div >{{userInfo.name}}</div>
           </CarouselItem>
           <CarouselItem>
-            <div class="demo-carousel">2</div>
+            <div >{{userInfo.email}}</div>
           </CarouselItem>
-          <CarouselItem>
+          <!-- <CarouselItem>
             <div class="demo-carousel">3</div>
           </CarouselItem>
           <CarouselItem>
             <div class="demo-carousel">4</div>
-          </CarouselItem>
+          </CarouselItem> -->
         </Carousel>
       </div>
     </Col>

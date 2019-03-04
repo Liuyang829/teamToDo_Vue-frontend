@@ -7,6 +7,7 @@ import VueAxios from 'vue-axios'
 import Qs from 'qs'
 import 'iview/dist/styles/iview.css'
 import './assets/css/index.scss'
+import './assets/iconfont/iconfont.css'
 import 'v-charts/lib/style.css'
 import fullCalendar from 'vue-fullcalendar'
 Vue.component('full-calendar', fullCalendar)

@@ -2,19 +2,9 @@
   <Row class-name="Row" type="flex" justify="space-between" align="middle" class="code-row-bg">
     <Col class-name="col-left" span="8">
       <div align="left">
-        <AutoComplete
-          placeholder="请选择一个项目"
-          @on-blur="delprojectlist"
-          @on-focus="getprojectlist"
-          v-model="search_value"
-          :data="project_names"
-          @on-search="filter_project"
-          style="width:50%"
-          @on-select="set_id"
-        >
-          <Option v-for="item in project_names" :value="item.name" :key="item.name">{{ item.name }}</Option>
-        </AutoComplete>
-        <Button type="text" shape="circle" icon="ios-arrow-round-forward" @click="toDetail()"></Button>
+        <Select v-model="search_value" @on-open-change="getprojectlist" @on-change="toDetail" style="width:50%" filterable>
+                <Option v-for="item in project_names" :value="item.id" :key="item.name">{{ item.name }}</Option>
+        </Select>
       </div>
     </Col>
     <Col class-name="col-center" span="8">
@@ -26,6 +16,10 @@
     </Col>
     <Col class-name="col-right" span="8">
       <div align="right">
+        <Poptip trigger="hover" placement="bottom-end">
+          <img slot="content" src="../assets/QR.jpeg">
+          <Button type="text" shape="circle" custom-icon="iconfont icon-QR" size="small" @click="showQR"></Button>
+        </Poptip>
         <a href="javascript:" class="btn" @click="calendar">日历</a>
         <Badge dot :count="count1" class="demo-badge">
           <Button
@@ -36,36 +30,22 @@
             @click="modal1 = true"
           ></Button>
         </Badge>&nbsp;
-        <!-- <Badge dot :count="count2">
-          <Button type="text" shape="circle" icon="md-text" size="small"></Button>
-        </Badge>-->
-        <!-- <Avatar
+        <Tooltip placement="bottom-end" offset=-100>
+          <Button ghost type="text" size="small">
+          <Avatar
           class="avatar"
           src="https://i.loli.net/2017/08/21/599a521472424.jpg"
           @click="show_personal_detail()"
-        />-->
+        />
+          </Button>
+          <div slot="content">
+            <h3>用户名：{{ userInfo.name }}</h3>
+            <p>邮箱：{{ userInfo.email }}</p>
+          </div>
+        </Tooltip>
+
+        
         <!-- <Button type="primary" shape="circle">{{userInfo.name}}</Button> -->
-        <Carousel
-        :loop="true"
-          :autoplay="true"
-          :autoplay-speed="5000"
-          :dots="none"
-          :trigger="click"
-          :arrow="hover"
-        >
-          <CarouselItem>
-            <div >{{userInfo.name}}</div>
-          </CarouselItem>
-          <CarouselItem>
-            <div >{{userInfo.email}}</div>
-          </CarouselItem>
-          <!-- <CarouselItem>
-            <div class="demo-carousel">3</div>
-          </CarouselItem>
-          <CarouselItem>
-            <div class="demo-carousel">4</div>
-          </CarouselItem> -->
-        </Carousel>
       </div>
     </Col>
     <Modal v-model="modal1" title="项目邀请信息">
@@ -215,36 +195,39 @@ export default {
     calendar() {
       this.$router.push("calendar");
     },
-    toDetail() {
-      this.axios
-        .get("http://localhost:8090/projects/")
-        .then(response => {
-          console.log(response.data.data);
-          // for(var i=0;i<response.data.data.length;i++){
-          //   this.project_names.push(response.data.data[i].name);
-          // }
-          // this.project_names=response.data.data;
-          var flag = 0;
-          for (var i = 0; i < response.data.data.length; i++) {
-            if (this.search_value == response.data.data[i].name) {
-              // console.log(this.project_names[i].name);
-              this.project_id = response.data.data[i].id;
-              this.$router.push({
+    toDetail(value) {
+      this.$router.push({
                 path: "/projectdetail",
-                query: { projectId: String(this.project_id) }
+                query: { projectId: String(value) }
               });
-              flag = 1;
-              break;
-            }
-          }
-          if (flag == 0) {
-            this.$Message.error("没有找到您搜索的项目，请重新选择");
-          }
-          console.log("123456", this.project_id);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+
+
+
+      // this.axios
+      //   .get("http://localhost:8090/projects/")
+      //   .then(response => {
+      //     console.log(response.data.data);
+      //     var flag = 0;
+      //     for (var i = 0; i < response.data.data.length; i++) {
+      //       if (this.search_value == response.data.data[i].name) {
+      //         // console.log(this.project_names[i].name);
+      //         this.project_id = response.data.data[i].id;
+      //         this.$router.push({
+      //           path: "/projectdetail",
+      //           query: { projectId: String(this.project_id) }
+      //         });
+      //         flag = 1;
+      //         break;
+      //       }
+      //     }
+      //     if (flag == 0) {
+      //       this.$Message.error("没有找到您搜索的项目，请重新选择");
+      //     }
+      //     console.log("123456", this.project_id);
+      //   })
+      //   .catch(function(error) {
+      //     console.log(error);
+      //   });
     },
     filter_project(value) {
       console.log("this is value", value);

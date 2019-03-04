@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="QR" unicode="&#58937;" d="M64-23.3c0-22.5 18.2-40.7 40.7-40.7h285.1v325.8h-325.8v-285.1zM187 139.8h81.5v-81.5h-81.5v81.5zM471.3 98.9h81.5v-162.9h-81.5zM64 424.7h162.9v-81.5h-162.9zM471.3 424.7h-162.9v-81.4h162.9v-162.9h81.4v407.2h-81.4zM634.2 261.8h162.9v-162.9h-162.9zM389.8 832h-285.1c-22.5 0-40.7-18.2-40.7-40.7v-285.1h325.8v325.8zM268.5 628.5h-81.5v81.5h81.5v-81.5zM919.3 832h-285.1v-325.8h325.8v285.1c0 22.5-18.2 40.7-40.7 40.7zM838.6 628.5h-81.5v81.5h81.5v-81.5zM471.3 832h81.5v-162.9h-81.5zM715.6 424.7h244.4v-81.5h-244.4zM878.5 17.5h-244.3v-81.5h285.1c22.5 0 40.7 18.2 40.7 40.7v285.1h-81.5v-244.3z"  horiz-adv-x="1024" />
+
+    
+
+
+  </font>
+</defs></svg>

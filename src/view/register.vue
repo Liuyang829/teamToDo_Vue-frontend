@@ -1,7 +1,6 @@
 <template>
   <div class="homepage-hero-module">
     <div class="video-container">
-      
       <div class="register">
         <h1 style="color:white">注册TeamToDo</h1>
         <br>
@@ -17,7 +16,7 @@
                 <Input type="text" placeholder="输入验证码" v-model="registerForm.code"></Input>
               </Col>
               <Col span="12">
-                <Button size="large" type="primary" long @click="submitcode()">获取验证码</Button>
+                <Button size="large" type="primary" :disabled="this.codeButton" long @click="submitcode()">{{ ButtonContent }}</Button>
               </Col>
             </Row>
           </FormItem>
@@ -63,15 +62,19 @@
 
 
 <script>
+import qs from "qs";
 export default {
   data() {
     return {
+      ButtonContent:"获取验证码",
+      codeButton: false,
+      totalTime:60,
       fixStyle: "",
       registerForm: {
         email: "",
         username: "",
         password: "",
-        code:""
+        code: ""
       },
       registerRule: {
         email: [
@@ -133,24 +136,42 @@ export default {
     },
     submitcode() {
       
-          console.log("dawd");
-          let formData = new FormData();
-          formData.append("email", this.registerForm.email);
+      let data = {
+        email: this.registerForm.email
+      };
 
-          let config = {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          };
-
-          this.axios
-            .post("http://localhost:8090/code/", formData, config)
-            .then(res => {
-              console.log(res);
-            })
-            .catch(res => {
-              console.log(res);
+      this.axios
+        .post("http://localhost:8090/code?" + qs.stringify(data))
+        .then(res => {
+          console.log(res);
+          if (res.data.code == 200) {
+            this.$Modal.success({
+              title: "验证码发送成功！",
+              content: "请查收您的邮箱。"
             });
+            this.codeButton=true;
+            let clock=window.setInterval(()=>{
+              this.totalTime--;
+              this.ButtonContent=this.totalTime+"s后重新发送";
+              if(this.totalTime<=0){
+                window.clearInterval(clock);
+                this.ButtonContent="重新发送验证码"
+                this.totalTime=60
+                this.codeButton=false;
+              }
+            },1000)
+            
+          }
+          else{
+            this.$Modal.error({
+              title: "操作失败！",
+              content: res.data.message
+            });
+          }
+        })
+        .catch(res => {
+          console.log(res);
+        });
     }
   },
   mounted: function() {

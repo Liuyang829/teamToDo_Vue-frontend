@@ -1,12 +1,15 @@
 <template>
   <div class="project-content">
     <h3 class="project-title">我负责的项目</h3>
-    
+
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
-        <img
-          :src="imgSrc[imgRandomIndex()]"
-        >
+      <li
+        class="project-item"
+        v-for="(item,index) in projects"
+        :key="item.name"
+        v-if="item.role=='creator'"
+      >
+        <img :src="imgSrc[imgRandomIndex(index)]">
 
         <div class="project-mask" @click="toDetail(item.id)">
           <div class="project-mask-level" v-if="item.level=='普通'" style="background-color:#2db7f5"></div>
@@ -42,16 +45,18 @@
         <Icon class="add-icon" @click="show = true" type="ios-add-circle"/>
         <p>创建新项目</p>
       </li>
-
     </ul>
 
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='member'" >
+      <li
+        class="project-item"
+        v-for="(item,index) in projects"
+        :key="item.name"
+        v-if="item.role=='member'"
+      >
         <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
-        <img
-          :src="imgSrc[imgRandomIndex()]"
-        >
+        <img :src="imgSrc[imgRandomIndex(index)]">
 
         <div class="project-mask" @click="toDetail(item.id)">
           <div class="project-mask-level" v-if="item.level=='普通'" style="background-color:#2db7f5"></div>
@@ -173,7 +178,7 @@ export default {
         "https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         "https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         "https://images.pexels.com/photos/934011/pexels-photo-934011.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        "https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
       ]
       // options3: {
       //       disabledDate (date) {
@@ -196,6 +201,7 @@ export default {
       .get("http://localhost:8090/projects/")
       .then(response => {
         this.projects = response.data.data;
+        console.log(this.projects);
       })
       .catch(function(error) {
         console.log(error);
@@ -203,8 +209,8 @@ export default {
   },
 
   methods: {
-    imgRandomIndex(){
-      return Math.floor((Math.random()*4)); 
+    imgRandomIndex(index) {
+      return index % 4;
     },
     toDetail(projectId) {
       if (this.pressDel == false) {
@@ -357,7 +363,7 @@ function getFormatDate(date) {
         width: 100%;
         height: 100%;
         opacity: 0.8;
-        -webkit-filter: blur(0.8px); 
+        -webkit-filter: blur(0.8px);
       }
       &.add-project {
         display: flex;

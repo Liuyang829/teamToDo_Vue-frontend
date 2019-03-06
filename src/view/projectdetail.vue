@@ -61,16 +61,18 @@
                     </Dropdown>
                   </p>
                   <a slot="extra">
-                    <Button @click="deletetask(taskitem.id)" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="changetask(taskitem.id)" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="changetask(taskitem.id)" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
                   <ul>
                     <li>负责人：(待分配)</li>
                     <Divider class="div"/>
+                    <li>开始时间：{{taskitem.start_time}} </li>
+                    <li>结束时间：{{taskitem.end_time}}   </li>
                     <li>任务简介：{{taskitem.description}}</li>
                   </ul>
                 </Card>
@@ -78,7 +80,7 @@
                 <br>
               </li>
 
-              <li>
+              <li v-if="userInfo.id == projectmembers[0].id">
                 <Button type="primary" @click="createtask = true" long>创建任务</Button>
               </li>
             </ul>
@@ -112,16 +114,18 @@
                     </Dropdown>
                   </p>
                   <a slot="extra">
-                    <Button @click="deletetask(taskitem.id)" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="changetask(taskitem.id)" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="changetask(taskitem.id)" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
                   <ul>
                     <li>负责人：{{taskitem.owner_name}}</li>
                     <Divider class="div"/>
+                    <li>开始时间：{{taskitem.start_time}} </li>
+                    <li>结束时间：{{taskitem.end_time}}   </li>
                     <li>任务简介：{{taskitem.description}}</li>
                   </ul>
                 </Card>
@@ -158,16 +162,18 @@
                     </Dropdown>
                   </p>
                   <a slot="extra">
-                    <Button @click="deletetask(taskitem.id)" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="deletetask(taskitem.id)" type="text">
                       <Icon type="ios-trash" size="25"/>
                     </Button>
-                    <Button @click="createtask = true" type="text">
+                    <Button v-if="userInfo.id == projectmembers[0].id" @click="changetask(taskitem.id)" type="text">
                       <Icon type="ios-clipboard" size="25"/>
                     </Button>
                   </a>
                   <ul>
                     <li>负责人：{{taskitem.owner_name}}</li>
                     <Divider class="div"/>
+                    <li>开始时间：{{taskitem.start_time}} </li>
+                    <li>结束时间：{{taskitem.end_time}}   </li>
                     <li>任务简介：{{taskitem.description}}</li>
                   </ul>
                 </Card>
@@ -231,11 +237,11 @@
       <div class="model-header" slot="header">
         <p>创建任务</p>
       </div>
-      <Form v-if="createtask" ref="taskinfo" :model="taskinfo" :rules="ruleInline">任务名称（必填）
-        <FormItem prop="name">
-          <Input type="text" v-model="taskinfo.name" placeholder="任务名称（必填）" clearable/>
-        </FormItem>任务简介
-        <FormItem prop="description">
+      <Form v-if="createtask" ref="taskinfo" :model="taskinfo">
+        <FormItem prop="name">任务名称
+          <Input type="text" v-model="taskinfo.name" placeholder="任务名称" clearable/>
+        </FormItem>
+        <FormItem prop="description">任务简介
           <Input
             type="textarea"
             rows="4"
@@ -243,8 +249,8 @@
             placeholder="任务简介"
             clearable
           />
-        </FormItem>任务级别
-        <FormItem prop="level">
+        </FormItem>
+        <FormItem prop="level">任务级别
           <Poptip v-model="poptipShow" trigger="click" title="级别" content="content">
             <Input
               style="width:368px"
@@ -254,13 +260,13 @@
               placeholder="级别"
             />
             <div class="status-wrap" slot="content">
-              <Button @click="changeLevel('普通')" type="success" class="status-btn" ghost>普通</Button>
-              <Button @click="changeLevel('紧急')" type="warning" class="status-btn" ghost>紧急</Button>
-              <Button @click="changeLevel('非常紧急')" type="error" class="status-btn" ghost>非常紧急</Button>
+              <Button @click="changeLevel('taskinfo','普通')" type="success" class="status-btn" ghost>普通</Button>
+              <Button @click="changeLevel('taskinfo','紧急')" type="warning" class="status-btn" ghost>紧急</Button>
+              <Button @click="changeLevel('taskinfo','非常紧急')" type="error" class="status-btn" ghost>非常紧急</Button>
             </div>
           </Poptip>
-        </FormItem>开始时间
-        <FormItem prop="start_time">
+        </FormItem>
+        <FormItem prop="start_time">开始时间
           <DatePicker
             options="start_date_limit"
             type="date"
@@ -268,8 +274,8 @@
             placeholder="开始时间"
             style="width: 368px"
           ></DatePicker>
-        </FormItem>结束时间
-        <FormItem prop="end_time">
+        </FormItem>
+        <FormItem prop="end_time">结束时间
           <DatePicker
             options="finish_date_limit"
             type="date"
@@ -290,52 +296,52 @@
         <p>修改任务</p>
       </div>
 
-      <Form v-if="changetaskmodel" ref="taskinfo" :model="taskinfo" :rules="ruleInline">任务名称（必填）
-        <FormItem prop="name">
-          <Input type="text" v-model="taskinfo.name" clearable/>
-        </FormItem>任务简介
-        <FormItem prop="description">
-          <Input type="textarea" rows="4" v-model="taskinfo.description" clearable/>
-        </FormItem>任务级别
-        <FormItem prop="level">
+      <Form v-if="changetaskmodel" ref="taskForm" :model="taskForm">
+        <FormItem v-if="userInfo.id == projectmembers[0].id" prop="name">任务名称
+          <Input type="text" v-model="taskForm.name" clearable/>
+        </FormItem>
+        <FormItem prop="description">任务简介
+          <Input type="textarea" rows="4" v-model="taskForm.description" clearable/>
+        </FormItem>
+        <FormItem v-if="userInfo.id == projectmembers[0].id" prop="level">任务级别
           <Poptip v-model="poptipShow" trigger="click" title="级别" content="content">
-            <Input style="width:368px" :readonly="true" type="text" v-model="taskinfo.level"/>
+            <Input style="width:368px" :readonly="true" type="text" v-model="taskForm.level"/>
             <div class="status-wrap" slot="content">
-              <Button @click="changeLevel('普通')" type="success" class="status-btn" ghost>普通</Button>
-              <Button @click="changeLevel('紧急')" type="warning" class="status-btn" ghost>紧急</Button>
-              <Button @click="changeLevel('非常紧急')" type="error" class="status-btn" ghost>非常紧急</Button>
+              <Button @click="changeLevel('taskForm','普通')" type="success" class="status-btn" ghost>普通</Button>
+              <Button @click="changeLevel('taskForm','紧急')" type="warning" class="status-btn" ghost>紧急</Button>
+              <Button @click="changeLevel('taskForm','非常紧急')" type="error" class="status-btn" ghost>非常紧急</Button>
             </div>
           </Poptip>
-        </FormItem>开始时间
-        <FormItem prop="start_time">
+        </FormItem>
+        <FormItem v-if="userInfo.id == projectmembers[0].id" prop="start_time">开始时间
           <DatePicker
             options="start_date_limit"
             type="date"
-            v-model="taskinfo.start_time"
+            v-model="taskForm.start_time"
             style="width: 368px"
           ></DatePicker>
-        </FormItem>结束时间
-        <FormItem prop="end_time">
+        </FormItem>
+        <FormItem v-if="userInfo.id == projectmembers[0].id" prop="end_time">结束时间
           <DatePicker
             options="finish_date_limit"
             type="date"
-            v-model="taskinfo.end_time"
+            v-model="taskForm.end_time"
             style="width: 368px"
           ></DatePicker>
         </FormItem>
 
-        <FormItem prop="owner_id" v-if="taskinfo.state != '待分配'">负责人(必选)
-          <Select v-model="taskinfo.owner_id">
+        <!-- <FormItem prop="owner_id" v-if="taskForm.state != '待分配' && userInfo.id == projectmembers[0].id">负责人
+          <Select v-model="taskForm.owner_id" >
             <Option
               v-for="memberitem in projectmembers"
               :key="memberitem.id"
               :value="memberitem.id"
             >{{memberitem.name}}</Option>
           </Select>
-        </FormItem>
+        </FormItem> -->
 
         <FormItem>
-          <Button long type="success" @click="changeSubmit('taskinfo')">保存修改</Button>
+          <Button long type="success" @click="changeSubmit('taskForm')">保存修改</Button>
         </FormItem>
       </Form>
     </Modal>
@@ -344,7 +350,7 @@
       <div class="model-header" slot="header">
         <p>选择负责人</p>
       </div>
-      <Form v-if="chooseMember" ref="taskinfo" :model="taskinfo" :rules="ruleInline">
+      <Form v-if="chooseMember" ref="taskinfo" :model="taskinfo">
         <FormItem prop="owner_id">
           <Select v-model="taskinfo.owner_id" placeholder="负责人(必选)">
             <Option
@@ -404,7 +410,12 @@
             </Col>
           </Row>
         </FormItem>
-
+        <FormItem>
+          <Select v-model="formItem.state">
+            <Option value="未完成">未完成</Option>
+            <Option value="已完成">已完成</Option>
+          </Select>
+        </FormItem>
         <FormItem>
           <div align="center">
             <Button type="primary" @click="upProject('formUpProject')">修改</Button>
@@ -493,8 +504,20 @@ export default {
         projectName: "",
         projectDesc: "",
         level: "",
+        state:"",
         start_time: "",
         end_time: ""
+      },
+      taskForm: {
+        created: "",
+        description: "",
+        end_time: "",
+        id: "",
+        level: "",
+        name: "",
+        owner_id: "",
+        start_time: "",
+        state: ""
       },
       fileColumns: [
         {
@@ -661,20 +684,31 @@ export default {
             message: "请填写任务名称",
             trigger: "blur"
           }
-        ]
+        ],
+        start_time: [
+          {
+            required: true,
+            message: "请填写开始时间",
+            trigger: "blur"
+          }
+        ],
+        level: [
+          {
+            required: true,
+            message: "请填写任务等级",
+            trigger: "blur"
+          }
+        ],
+        end_time: [
+          {
+            required: true,
+            message: "请填写结束时间",
+            trigger: "blur"
+          }
+        ],
       },
       tasklist: "",
       value1: false,
-      start_date_limit: {
-        disabledDate(date) {
-          return date && date.valueOf() < Date.now() - 86400000;
-        }
-      },
-      finish_date_limit: {
-        disabledDate(date) {
-          return date && date.valueOf() < this.taskinfo.start_time.valueOf();
-        }
-      }
     };
   },
   //渲染task
@@ -683,7 +717,6 @@ export default {
     //获取跳转页面带来的projectId
     this.projectId = this.$route.query.projectId;
     
-
     //获取项目详情和任务列表
     this.axios
       .get("http://localhost:8090/projects/tasks", {
@@ -731,6 +764,7 @@ export default {
       this.formItem.level = this.projectInfo.level;
       this.formItem.start_time = this.projectInfo.start_time;
       this.formItem.end_time = this.projectInfo.end_time;
+      this.formItem.state=this.projectInfo.state;
     },
 
     getFiles() {
@@ -769,7 +803,7 @@ export default {
     uploadSuccess() {
       this.$Modal.success({
         title: "上传成功",
-        content: "请点击文件图标进行刷新。"
+        content:"",
       });
       this.getFiles();
     },
@@ -849,14 +883,16 @@ export default {
           console.log(error);
         });
     },
-
+    createdtask(){
+      this.createtask=true;
+    },
     upProject(name) {
       let data = {
         project_id: this.projectId,
         name: this.formItem.projectName,
         description: this.formItem.projectDesc,
         level: this.formItem.level,
-        state: "w",
+        state: this.formItem.state,
         start_time: getFormatDate(new Date(this.formItem.start_time)),
         end_time: getFormatDate(new Date(this.formItem.end_time))
       };
@@ -912,8 +948,12 @@ export default {
         });
     },
 
-    changeLevel(level) {
-      this.taskinfo.level = level;
+    changeLevel(btn,level) {
+      // console.log(level);
+      if(btn == "taskinfo")
+        this.taskinfo.level = level;
+      else
+        this.taskForm.level = level;
       this.poptipShow = false;
     },
     createsubmit(name) {
@@ -930,6 +970,11 @@ export default {
             start_time: getFormatDate(new Date(this.taskinfo.start_time)),
             end_time: getFormatDate(new Date(this.taskinfo.end_time))
             //owner_id: this.taskinfo.owner_id,
+          };
+          if(data.start_time > data.end_time)
+          {
+            this.$Message.error("日期错误");
+            return;
           };
           console.log("data", data);
           // POST
@@ -961,41 +1006,62 @@ export default {
           break;
         }
       }
+      
+        this.taskForm.description=this.taskinfo.description;
+        this.taskForm.end_time=this.taskinfo.end_time;
+        this.taskForm.id=this.taskinfo.id;
+        this.taskForm.level=this.taskinfo.level;
+        this.taskForm.name=this.taskinfo.name;
+        this.taskForm.owner_id=this.taskinfo.owner_id;
+        this.taskForm.start_time=this.taskinfo.start_time;
+        this.taskForm.state=this.taskinfo.state;
       this.changetaskmodel = true;
     },
 
-    changeSubmit() {
-      console.log("change task:", this.taskinfo.id);
-      console.log(this.taskinfo);
-      this.$Modal.confirm({
-        title: "确定保存修改？",
-        content: "<p>修改后将无法恢复！！！</p>",
-        onOk: () => {
-          let data = this.taskinfo;
-          data.project_id = this.projectId;
-          data.task_id = this.taskinfo.id;
-          data.start_time = getFormatDate(data.start_time);
-          data.end_time = getFormatDate(data.end_time);
-          console.log(data);
-          this.axios
-            .put("http://localhost:8090/projects/tasks?=" + qs.stringify(data))
-            .then(response => {
-              if (response.data.code == 200) {
-                this.$Message.success("任务修改成功");
-                this.changetaskmodel = false;
-                this.reload();
-              } else {
-                this.$Message.error("任务修改失败");
+    changeSubmit(name) {
+      // 审核数据
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          console.log("change task:", this.taskinfo.id);
+          console.log(this.taskForm);
+          this.$Modal.confirm({
+            title: "确定保存修改？",
+            content: "<p>修改后将无法恢复！！！</p>",
+            onOk: () => {
+              let data = this.taskForm;
+              console.log(data)
+              data.project_id = this.projectId;
+              data.task_id = this.taskForm.id;
+              data.start_time = getFormatDate(new Date(data.start_time));
+              data.end_time = getFormatDate(new Date(data.end_time));
+              data.owner_id=this.taskForm.owner_id;
+              console.log(data);
+              if(data.start_time > data.end_time)
+              {
+                this.$Message.error("日期错误");
+                return
               }
-            })
-            .catch(error => {
-              console.log(error);
-            });
-        },
-        onCancel: () => {
-          this.$Message.error("任务修改取消");
+              this.axios
+                .put("http://localhost:8090/projects/tasks?" + qs.stringify(data))
+                .then(response => {
+                  if (response.data.code == 200) {
+                    this.$Message.success("任务修改成功");
+                    this.changetaskmodel = false;
+                    this.reload();
+                  } else {
+                    this.$Message.error("任务修改失败");
+                  }
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            },
+            onCancel: () => {
+              this.$Message.error("任务修改取消");
+            },
+          });
         }
-      });
+      })
     },
 
     changeState(newstate, taskid) {
@@ -1004,6 +1070,11 @@ export default {
           this.taskinfo = this.tasklist[taskitem];
           break;
         }
+      }
+      if (this.userInfo.id != this.projectmembers[0].id && (this.taskinfo.state == "待分配" || newstate == "待分配"))
+      {
+        this.$Message.error("您是参与者，权限错误");
+        return;
       }
       if (this.taskinfo.state == "待分配") {
         this.chooseMember = true;
@@ -1014,16 +1085,18 @@ export default {
         if (newstate == "待分配") {
           data.owner_id = "";
         }
+        var old = data.state;
         data.state = newstate;
         console.log(data);
         this.axios
-          .put("http://localhost:8090/projects/tasks?=" + qs.stringify(data))
+          .put("http://localhost:8090/projects/tasks?" + qs.stringify(data))
           .then(response => {
             if (response.data.code == 200) {
               this.$Message.success("任务状态修改成功");
-              this.reload();
+              // this.reload();
             } else {
               this.$Message.error("任务状态修改失败");
+              data.state=old;
             }
           })
           .catch(error => {
@@ -1038,6 +1111,11 @@ export default {
         task_id: this.taskinfo.id,
         project_id: this.projectId,
         owner_id: this.taskinfo.owner_id
+      };
+      if(data.owner_id == null)
+      {
+        this.$Message.error("必须选择负责人");
+        return;
       };
       console.log(data);
       this.axios

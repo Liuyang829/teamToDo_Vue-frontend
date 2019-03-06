@@ -3,9 +3,9 @@
     <h3 class="project-title">我负责的项目</h3>
     
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='creator'" >
+      <li class="project-item" v-for="(item,index) in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
-          :src="imgSrc[imgRandomIndex()]"
+          :src="imgSrc[imgRandomIndex(index)]"
         >
 
         <div class="project-mask" @click="toDetail(item.id)">
@@ -47,10 +47,10 @@
 
     <p class="project-title">我参与的项目</p>
     <ul class="project-list">
-      <li class="project-item" v-for="item in projects" :key="item.name" v-if="item.role=='member'" >
+      <li class="project-item" v-for="(item,index) in projects" :key="item.name" v-if="item.role=='member'" >
         <!-- <img src="https://mailimg.teambition.com/logos/cover-demo.jpg"> -->
         <img
-          :src="imgSrc[imgRandomIndex()]"
+          :src="imgSrc[imgRandomIndex(index)]"
         >
 
         <div class="project-mask" @click="toDetail(item.id)">
@@ -173,7 +173,7 @@ export default {
         "https://images.pexels.com/photos/459654/pexels-photo-459654.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         "https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         "https://images.pexels.com/photos/934011/pexels-photo-934011.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-        "https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/403571/pexels-photo-403571.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
       ]
       // options3: {
       //       disabledDate (date) {
@@ -203,8 +203,9 @@ export default {
   },
 
   methods: {
-    imgRandomIndex(){
-      return Math.floor((Math.random()*4)); 
+    imgRandomIndex(index){
+      // return Math.floor((Math.random()*4)); 
+      return index % 4;
     },
     toDetail(projectId) {
       if (this.pressDel == false) {

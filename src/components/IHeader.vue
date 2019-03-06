@@ -30,7 +30,7 @@
             @click="modal1 = true"
           ></Button>
         </Badge>&nbsp;
-        <Tooltip placement="bottom-end" offset=-100>
+        <Tooltip placement="bottom-end" offset=-10>
           <Button ghost type="text" size="small">
           <Avatar
           class="avatar"

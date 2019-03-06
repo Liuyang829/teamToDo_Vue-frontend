@@ -1,7 +1,7 @@
 <template>
   <div class="project-content">
     <h3 class="project-title">我负责的项目</h3>
-    
+
     <ul class="project-list">
       <li class="project-item" v-for="(item,index) in projects" :key="item.name" v-if="item.role=='creator'" >
         <img
@@ -42,7 +42,6 @@
         <Icon class="add-icon" @click="show = true" type="ios-add-circle"/>
         <p>创建新项目</p>
       </li>
-
     </ul>
 
     <p class="project-title">我参与的项目</p>
@@ -196,6 +195,7 @@ export default {
       .get("http://localhost:8090/projects/")
       .then(response => {
         this.projects = response.data.data;
+        console.log(this.projects);
       })
       .catch(function(error) {
         console.log(error);
@@ -358,7 +358,7 @@ function getFormatDate(date) {
         width: 100%;
         height: 100%;
         opacity: 0.8;
-        -webkit-filter: blur(0.8px); 
+        -webkit-filter: blur(0.8px);
       }
       &.add-project {
         display: flex;
